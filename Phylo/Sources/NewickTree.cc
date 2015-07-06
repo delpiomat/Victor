@@ -526,7 +526,7 @@ std::vector<double> distance;
     		}//end while
     		root=trees[0].getRoot();
 
-
+    		cout<<"end UPGMA"<<endl;
     	}//end method
 
 

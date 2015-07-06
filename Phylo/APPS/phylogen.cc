@@ -30,10 +30,6 @@
 
 #include <GetArg.h>
 
-#include <PhyloTree.h>
-#include <PhyloTreeUPGMA.h>
-#include <PhyloTreeNJ.h>
-
 #include <NewickTree.h>
 #include <PhyloSupport.h>
 
@@ -47,116 +43,6 @@ using namespace Victor::Phylo;
 using namespace Victor;
 using namespace std;
 
-vector<Alignment> calcAlignmentV(Alignment *aliSec, vector<vector<double> > &distance){
-	string seq1Name, seq2Name, seq1, seq2, sec1, sec2;
-
-	Alignment newAli;
-	string path = getenv("VICTOR_ROOT");
-	if (path.length() < 3)
-		cout << "Warning: environment variable VICTOR_ROOT is not set." << endl;
-
-	string dataPath = path + "data/";
-
-	//n=4? no idea. Default in APP/subali.cc
-	int n=4;
-
-	AlignmentData *ad;
-
-	//Default matrix
-	string matrixFileName="blosum62.dat";
-	matrixFileName = dataPath + matrixFileName;
-	ifstream matrixFile(matrixFileName.c_str());
-	if (!matrixFile)
-		ERROR("Error opening substitution matrix file.", exception);
-	SubMatrix sub(matrixFile);
-
-	//Default gap function
-	double openGapPenalty=12;
-	double extensionGapPenalty=3;
-	GapFunction *gf = new AGPFunction(openGapPenalty, extensionGapPenalty);
-
-
-	//Default Structure
-	 Structure *str;
-	 str = 0;
-
-	//Default csep
-	 double cSeq;
-	 cSeq = 1.00;
-
-	//Default ScoringScheme
-	ScoringScheme *ss;
-
-	//Global Align
-	Align *a;
-	cout << "\nSuboptimal Needleman-Wunsch alignments:\n" << endl;
-
-	double suboptPenaltyMul=1;
-	double suboptPenaltyAdd=1;
-
-	unsigned int suboptNum=1;
-
-	vector<Alignment> a2;
-
-	Alignment a3;
-
-	vector <Alignment> alignV(aliSec->size()+1);//vector of align
-
-	double score=0;
-	//size not count target. so +1
-	for(unsigned int index=0;index<aliSec->size()+1;index++){
-		cout<<" index="<<index;
-		if(index==aliSec->size()){
-			seq1 = Alignment::getPureSequence(aliSec->getTarget());
-			seq1Name = aliSec->getTargetName();
-		}
-		else{
-			seq1 = Alignment::getPureSequence(aliSec->getTemplate(index));
-			seq1Name = aliSec->getTemplateName(index);
-		}
-		for(unsigned int j=0;j<aliSec->size()+1;j++){
-			cout<<" j="<<index;
-			if(j==aliSec->size()){
-				seq2 = Alignment::getPureSequence(aliSec->getTarget());
-				seq2Name = aliSec->getTargetName();
-			}else{
-				seq2 = Alignment::getPureSequence(aliSec->getTemplate(j));
-				seq2Name = aliSec->getTemplateName(j);
-			}
-
-			ad = new SequenceData(n, seq1, seq2, seq1Name, seq2Name);
-
-			ss = new ScoringS2S(&sub, ad, str, cSeq);
-
-			a = new NWAlign(ad, gf, ss);
-
-			a->setPenalties(suboptPenaltyMul, suboptPenaltyAdd);
-			a2 = a->generateMultiMatch(suboptNum);
-			if (a2.size() == 0)
-				ERROR("No output alignments generated.", exception);
-
-			a2[0].cutTemplate(1);
-			score=PhyloTree::distanceCalcTwoSeq(a2[0].getTarget(),a2[0].getTemplate(0));
-			distance[index][j]=score;
-			cout<<"SCORE="<<distance[index][j]<<" ";
-			if(j==0)
-				newAli = a2[0];
-			else
-				newAli.addAlignment(a2[0]);
-		}//end for j
-		cout<<"ultima seq1 "<<seq1Name<<endl;
-		cout<<"corrisponde al target "<<newAli.getTargetName()<<endl;
-		cout<<"ultima seq2 "<<seq2Name<<endl;
-		cout<<"fine j"<<"AlignV ha size "<<alignV.size()<<endl;
-
-		cout<<"ongi align vale?"<<newAli.size()<<endl;
-
-		alignV[index]=newAli;
-	}//end for index
-
-	cout<<"NWAlign ok"<<endl;
-	return alignV;
-}
 
 
 /// Show command line options and help text.
@@ -299,6 +185,7 @@ int main(int argc, char **argv) {
 	cout<<"Align2 Victor distance of "<<sequ3<<" and "<<sequ4<<" ="<<1-aliSec.calculatePairwiseIdentity(sequ3,sequ4)<<endl;
 	cout<<"Align2 Victor distance of "<<sequ4<<" and "<<sequ3<<" ="<<1-aliSec.calculatePairwiseIdentity(sequ4,sequ3)<<endl;
 
+	cout<<"fine";
 
 	return 0;
 
