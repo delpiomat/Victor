@@ -16,11 +16,11 @@ BINPATH = ../../bin
 # Libraries and paths (which are not defined globally).
 #
 
-LIBS =  -lAlign2 -lBiopool -lPhylo -ltools -L/usr/lib/ -lm -ldl -lcppunit
+LIBS =  -lPhylo -lAlign2 -ltools -L/usr/lib/ -lm -ldl -lcppunit
 
 LIB_PATH = -L.
 
-INC_PATH = -I. -I ../../Biopool/ -I../../tools/ -I../../Align2/Sources -I../../Phylo/Sources
+INC_PATH = -I. -I../../tools/ -I../../Align2/Sources -I../../Phylo/Sources
 
 #
 # Objects and headers
@@ -34,7 +34,7 @@ TARGETS = TestPhylogen
 
 EXECS = TestPhylogen
 
-LIBRARY = TESTlibTestPhylogen.a
+LIBRARY = TESTlibPhylogen.a
 
 #
 # Install rule

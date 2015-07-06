@@ -15,11 +15,11 @@ BINPATH = ../../bin
 # Libraries and paths (which are not defined globally)
 #
 
-LIBS = -lAlign2 -lBiopool -lPhylo -ltools 
+LIBS = -lPhylo -lAlign2 -ltools 
 
 LIB_PATH = -L.
 
-INC_PATH = -I. -I ../../Biopool/ -I../../tools/ -I../../Align2/Sources -I../../Phylo/Sources
+INC_PATH = -I. -I../../tools/ -I../../Align2/Sources -I../../Phylo/Sources
 
 #
 # Objects and headers
