@@ -1,0 +1,51 @@
+#--*- makefile -*--------------------------------------------------------------
+#
+#   Standard makefile
+#
+#------------------------------------------------------------------------------
+
+# Path to project directory
+UPDIR = ../..
+# Path to subdirectories
+SUBDIR =
+# Path to directory for binaries
+BINPATH = ../../bin
+
+#
+# Libraries and paths (which are not defined globally)
+#
+
+LIBS = -lAlign2 -lBiopool -ltools -lPhylo
+
+LIB_PATH = -L.
+
+INC_PATH = -I. -I ../../Align2/Sources -I../../Biopool/Sources -I../../tools/
+
+#
+# Objects and headers
+#
+
+SOURCES = PhyloSupport.cc NewickTree.cc
+
+OBJECTS = PhyloSupport.o NewickTree.o
+
+TARGETS =  
+
+EXECS =  
+
+LIBRARY = libPhylo.a
+
+#
+# Install rule
+#
+
+compile: all
+
+install: $(LIBRARY) $(TARGETS)
+	mv $(LIBRARY) $(UPDIR)/lib
+
+#
+# Call global Makefile to do the job
+#
+all: install
+include ../../Makefile.global
