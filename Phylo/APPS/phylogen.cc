@@ -185,7 +185,7 @@ int main(int argc, char **argv) {
 	cout<<"Align2 Victor distance of "<<sequ3<<" and "<<sequ4<<" ="<<1-aliSec.calculatePairwiseIdentity(sequ3,sequ4)<<endl;
 	cout<<"Align2 Victor distance of "<<sequ4<<" and "<<sequ3<<" ="<<1-aliSec.calculatePairwiseIdentity(sequ4,sequ3)<<endl;
 
-	cout<<"fine";
+	cout<<"fine------------------------------"<<endl;
 
 	return 0;
 
