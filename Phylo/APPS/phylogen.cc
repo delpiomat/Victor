@@ -70,7 +70,7 @@ sShowHelp() {
             << "\n   [--cSeq <double>] \t Coefficient for sequence alignment (default = 0.80)"
             << "\n   [--cStr <double>] \t Coefficient for structural alignment (default = 0.20)"
             << "\n"
-			<< "\n   [--kimura]     	\t use kimura formula for calculate distance of pairwise sequence"
+			<< "\n   [--ktuples]     	\t use ktuples method  formula for calculate distance of pairwise sequence"
             << "\n   [--verbose]       	\t Verbose mode"
             << "\n" << endl;
 }
@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
     unsigned int  gapFunction, cluster;
     double cSeq, cStr;
     bool verbose=false;
-    bool kimura=false;
+    bool ktuples=false;
     struct tm* newtime;
     time_t t;
 
@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
 	getArg("-cSeq", cSeq, argc, argv, 0.80);
 	getArg("-cStr", cStr, argc, argv, 0.20);
 
-	kimura = getArg("-kimura", argc, argv);
+	ktuples = getArg("-ktuples", argc, argv);
 	verbose = getArg("-verbose", argc, argv);
 
     // --------------------------------------------------
@@ -142,13 +142,13 @@ int main(int argc, char **argv) {
 	string out="Error Tree";
 	if(cluster==0){
 		cout<<"##########################################Starting PhyloTreeUPGMA#####################################"<<endl;
-		tree.upgma(aliSec,kimura,verbose);
+		tree.upgma(aliSec,ktuples,verbose);
 		cout<<"##########################################Tree create with PhyloTreeUPGMA#############################"<<endl;
 		out=tree.printNewickTree();
 	}
 	else if(cluster==1){
 		cout<<"##########################################Starting PhyloTreeNJ########################################"<<endl;
-		tree.neighborJoining(aliSec,kimura,verbose);
+		tree.neighborJoining(aliSec,ktuples,verbose);
 		cout<<"##########################################Tree create with PhyloTreeNJ################################"<<endl;
 		out=tree.printNewickTree();
 	}

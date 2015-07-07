@@ -49,22 +49,30 @@ namespace Victor { namespace Phylo{
 std::vector<double> distance;
 
 	NewickTree::NewickTree() {
+
+		leafList=NULL;
 		root=new iNode;
 		root->name="NULL";
 		root->left=NULL;
 		root->right=NULL;
+		root->parent=NULL;
 		root->seq="noPURESeq";
 		root->allignSeq="noSeq";
 		root->branchLength=-1;
 		root->divergenceR=0;
 		root->nseq=-1;
+
 		root->isLeaf=true;
+		root->numberOfChildren=0;
 	}
 
 	NewickTree::NewickTree(int position,string name,string pureSeq,double divR){
+
+		leafList=NULL;
 		root=new iNode;
 		root->left=NULL;
 		root->right=NULL;
+		root->parent=NULL;
 		root->allignSeq="noSeq";
 		root->branchLength=-1;
 
@@ -73,21 +81,26 @@ std::vector<double> distance;
 		root->seq=pureSeq;
 		root->nseq=position;
 		root->isLeaf=true;
+		root->numberOfChildren=0;
 	}
 
 
 	NewickTree::NewickTree(int position,string name,string pureSeq){
+
+		leafList=NULL;
 		root=new iNode;
 		root->left=NULL;
 		root->right=NULL;
+		root->parent=NULL;
 		root->allignSeq="noSeq";
-		root->branchLength=-1;
+		root->branchLength=0;
 
 		root->name=name;
 		root->divergenceR=0;
 		root->seq=pureSeq;
 		root->nseq=position;
 		root->isLeaf=true;
+		root->numberOfChildren=0;
 	}
 
 
@@ -96,16 +109,23 @@ std::vector<double> distance;
 	 *@Description Create new Tree. Used for union two different Tree.
 	 */
 	NewickTree::NewickTree( NewickTree *rTree, NewickTree *lTree) {
+		leafList=NULL;
 		root=new iNode;
 		root->allignSeq="noSeq";
 		root->branchLength=-1;
+
 		root->isLeaf=false;//internal
+		root->numberOfChildren=rTree->getNumOfChildren()+lTree->getNumOfChildren();
+
 		root->name="";
 		root->seq="";
 		root->left=rTree->getRoot();
 		root->right=lTree->getRoot();
+		root->parent=NULL;
+
 		root->divergenceR=0;
 	}
+
 
 
 	/**
@@ -128,6 +148,9 @@ std::vector<double> distance;
 	iNode*NewickTree::getLeftChild(){
 		return root->left;
     }
+	iNode*NewickTree::getParent(){
+		return root->parent;
+    }
 
     string NewickTree::getName(){
     	return root->name;
@@ -138,6 +161,20 @@ std::vector<double> distance;
     }
 
 
+    bool NewickTree::isLeaf(){
+    	return root->isLeaf;
+    }
+
+    int NewickTree::getNumOfChildren(){
+    	return root->numberOfChildren;
+    }
+
+    double NewickTree::getWeigth(){
+ 	   return root->weigth;
+    }
+
+
+
 	// MODIFIERS:
 
 
@@ -145,20 +182,20 @@ std::vector<double> distance;
     // OPERATORS:
     /**
      * */
-    void NewickTree::neighborJoining(Align2::Alignment ali,bool kimuraD, bool verbose){
+    void NewickTree::neighborJoining(Align2::Alignment ali,bool ktuples, bool verbose){
 
 		int Nseq=ali.size()+1;//number of seq
 		vector<vector<double> > distance(Nseq, std::vector<double>(Nseq, 0));
 
-		cout<<"---------Creating Distance Matrix--------------/"<<endl;
-		vector<Alignment>vet=PhyloSupport::calcAlignmentV(&ali,distance,kimuraD,verbose);
+		if(verbose)
+			cout<<"---------Creating Distance Matrix--------------/"<<endl;
+		vector<Alignment>vet=PhyloSupport::calcAlignmentV(&ali,distance,ktuples,verbose);
 
-		cout<<"---------Print Distance Matrix--------------/"<<endl;
-		for(unsigned int i=0; i<distance.size(); i++){
-			for(unsigned int j=0; j<distance.size(); j++){
-				cout<<distance[i][j]<<" ";
-			}
-			cout<<endl;
+
+
+		if (verbose){
+			cout<<"---------Print Distance Matrix--------------/"<<endl;
+			PhyloSupport::printMatrix(distance);
 		}
 
 		vector<NewickTree> trees(Nseq);
@@ -173,8 +210,10 @@ std::vector<double> distance;
 
 		}
 
-		//matrix Mij for calculate minimun distance
-		vector<vector<double> > Mij(trees.size(), std::vector<double>(trees.size(), 0));
+
+		vector<NewickTree> seqList(trees.size());//never modify, used after create guide tree
+		int count=0;//count number of seq insert in seqList
+
 
 		//memorize the nearest seq
 		unsigned int minj=0;
@@ -186,85 +225,90 @@ std::vector<double> distance;
 		unsigned int newi=0;
 		unsigned int newj=0;
 
-		int count=0;
-		while(trees.size()!=3){//start 27,  end 3
-			count=1;
-			cout<<"----------------WHile num= "<<trees.size()<<"---------------"<<endl;
+
+		while(trees.size()!=3){// end 3
+			if(verbose)
+				cout<<"----------------While num= "<<(Nseq-trees.size())<<"---------------"<<endl;
+
 			//calculate a new distanceMatrix using for each pair of seq
-			//Example: M(ij)=d(ij) -[r(i) + r(j)] or in the case of the pair A,B:
-			//Example: M(AB)=d(AB) -[(r(A) + r(B)]
-			// r=divergenceR, d(AB)=distanceA-B, M(AB)=newDistnace
+			//Example: M(ij)=d(ij) -([r(i) + r(j)]/N-2) or in the case of the pair A,B:
+			//Example: M(AB)=d(AB) -([(r(A) + r(B)]/N-2)
+			// r=divergenceR, d(AB)=distanceA-B, M(AB)=newDistnace, N=total node in this moment
+			//matrix Mij for calculate minimun distance
+			vector<vector<double> > Mij(trees.size(), std::vector<double>(trees.size(), 0));
 
 			for(unsigned int i=0; i<trees.size(); i++){
 				for(unsigned int j=0; j<trees.size(); j++){
 					if(i!=j){
-						Mij[i][j]=distance[i][j] - ( trees[i].getRdiv()+trees[j].getRdiv() );
+						Mij[i][j]=distance[i][j] - (  (trees[i].getRdiv()+trees[j].getRdiv())/(trees.size()-2)  );
+						if(verbose)
+							cout<<"MIJ "<<i<<" "<<j<<" = "<<distance[i][j]<<" - ( "<<trees[i].getRdiv()<<" + "<<trees[j].getRdiv()<<" ) = "<<Mij[i][j]<<endl;
 					}
 					else
 						Mij[i][j]=0;//diagonal useless
 				}
 			}
 
-			cout<<endl<<"----------------------------Create Min Distance Matrix--------------------------------"<<endl;
+			if(verbose){
+				cout<<"----------------------------MIJ MATRIX--------------------------------"<<endl;
+				PhyloSupport::printMatrix(Mij);
+				cout<<endl<<"----------------------------find Min RDiv--------------------------------"<<endl;
+			}
+
+			//reset
 			mini=0;
 			minj=1;
-			//cout<<"Find min distance"<<endl;
+
+			//find min i e min j
 			for(unsigned int i=0; i<trees.size(); i++){
-				//cout<<"seq "<<i<<endl;
 				for(unsigned int j=0; j<trees.size(); j++){
-					//cout<<trees[i].getDistance(j)<<" ";
 					if( Mij[mini][minj]  > Mij[i][j] && i!=j)
 					{
 						minj=j;
 						mini=i;
 					}
 				}
-				//cout<<endl;
 			}
 
-			cout<<endl<<"----------------------------min i j find! "<<mini<<" "<<minj<<" --------------------------------"<<endl;
+			if(verbose)
+				cout<<endl<<"----------------------------min i j find! "<<mini<<" "<<minj<<" --------------------------------"<<endl;
 
 
 			//distance of new node U respect A B the children
-			//S(AU) =(d(AB)/2) + ([r(A)-r(B)]/2)
-			//S(BU) =(d(AB)/2) + ([r(B)-r(A)]/2)
-			trees[mini].setBranchLength((distance[mini][minj]/2) +  ((trees[mini].getRdiv()-trees[minj].getRdiv() )/2) );
-			trees[minj].setBranchLength((distance[mini][minj]/2) +  ((trees[minj].getRdiv()-trees[mini].getRdiv() )/2) );
-
+			//S(AU) =(d(AB)/2) + ([r(A)-r(B)]/2(n-2) ))
+			//S(BU) =(d(AB)/2) + ([r(B)-r(A)]/2(n-2) ))
+			trees[mini].setBranchLength((distance[mini][minj]/2) +  ((trees[mini].getRdiv()-trees[minj].getRdiv() )/(2*(trees.size()-2))  ) );
+			trees[minj].setBranchLength((distance[mini][minj]/2) +  ((trees[minj].getRdiv()-trees[mini].getRdiv() )/(2*(trees.size()-2))  ) );
 
 			vector<vector<double> > tmpdistance(trees.size()-1, std::vector<double>(trees.size()-1, 0));
+
+			//reset
 			newi=0;
 			newj=0;
-			cout<<"startcopy"<<endl;
 			//copy old matrix in new matrix, but not mini (A) and minj (B) and not the new node (U)
 			for(unsigned int i=0; i<distance.size();i++){
 				for(unsigned int j=0; j<distance.size();j++){
 					if(i!=mini && j!=minj && i!=minj && j!=mini){
 						if(i<mini && i<minj){
 							newi=i;
-							cout<<"caso 0,";
 						}
 						else if(i>mini && i<minj){
 							newi=i-1;
-							cout<<"caso 1,";
 						}
 						else if(i>mini && i>minj){
-							cout<<"caso 2,";
 							newi=i-2;
 						}
 						if(j<mini && j<minj){
 							newj=j;
-							cout<<"caso 3 ";
 						}
 						else if(j>mini && j<minj){
 							newj=j-1;
-							cout<<"caso 4 ";
 						}
 						else if(j>mini && j>minj){
 							newj=j-2;
-							cout<<"caso 5 ";
 						}
-						cout<<"mini e minj "<<mini<<" "<<minj<<" i e j "<<i<<" "<<j<<" newi e new j "<<newi<<" "<<newj<<" "<<"valore "<<distance[i][j]<<endl;
+						if(verbose)
+							cout<<endl<<"mini e minj "<<mini<<" "<<minj<<" i e j "<<i<<" "<<j<<" newi e new j "<<newi<<" "<<newj<<" "<<"distance value  "<<distance[i][j]<<endl;
 						tmpdistance[newi][newj]=distance[i][j];
 					}
 				}//end for j
@@ -282,43 +326,47 @@ std::vector<double> distance;
 				if(i!=mini && i!=minj){
 					if(i<mini && i<minj){
 						newi=i;
-						cout<<"caso 0,";
 					}
 					else if(i>mini && i<minj){
 						newi=i-1;
-						cout<<"caso 1,";
 					}
 					else if(i>mini && i>minj){
-						cout<<"caso 2,";
 						newi=i-2;
 					}
 				tmpdistance[newi][tmpdistance.size()-1]=(distance[mini][i]+distance[minj][i]-distance[mini][minj])/2;
-				cout<<distance[mini][i]<<" + "<<distance[minj][i]<<" - "<<distance[mini][minj]<<"/2 = "<<tmpdistance[newi][tmpdistance.size()-1]<<endl;
+				if(verbose)
+					cout<<endl<<"("<<distance[mini][i]<<" + "<<distance[minj][i]<<" - "<<distance[mini][minj]<<")/2 = "<<tmpdistance[newi][tmpdistance.size()-1]<<endl;
 				tmpdistance[tmpdistance.size()-1][newi]=tmpdistance[newi][tmpdistance.size()-1];
 				}
 			}
 
-			cout<<"3 Difference matrix---------------------------------"<<endl;
-			PhyloSupport::printMatrix(distance);
-			cout<<"stop first matrix---------------------------------"<<endl;
-			PhyloSupport::printMatrix(tmpdistance);
-			distance=tmpdistance;
-			cout<<"end tmp matrix----------------------------------"<<endl;
-			cout<<"THE NEW matrix---------------------------------"<<endl;
 			//ccreate ne distance matrix dimension-1
 			distance=tmpdistance;
 			PhyloSupport::printMatrix(distance);
-			cout<<"the distance of tree vector "<<trees.size()<<endl;
-			cout<<endl<<"---------------Create distance of other node from new node!--------------------------"<<endl;
 
 			//insert new tree
 			trees.push_back(NewickTree(&trees[mini],&trees[minj]));
+
+			//insert parent
+			trees[mini].setParent(&trees[trees.size()-1]);
+			trees[minj].setParent(&trees[trees.size()-1]);
+
+			//save in array if leaf
+			if(trees[mini].isLeaf()){
+				seqList[count]=trees[mini];
+				count++;
+			}
+			if(trees[minj].isLeaf()){
+				seqList[count]=trees[minj];
+				count++;
+			}
 
 			//erase trees
 			trees.erase(trees.begin()+mini);
 			//minus 1, because  length was decreased
 			trees.erase(trees.begin()+minj-1);
-			cout<<"the distance of tree vector "<<trees.size()<<endl;
+			if(verbose)
+				cout<<"the distance of tree vector after erase"<<trees.size()<<endl;
 
 			//SET NEW r
 			for(unsigned int i=0; i<trees.size();i++)
@@ -359,6 +407,33 @@ std::vector<double> distance;
 			tmpT->setBranchLength((distance[0][1]/2+distance[0][2]/2)/2-tmpT->getValueOFChildBranchLength());
 			tmpT=new NewickTree(tmpT,&trees[0]);
 			}
+
+		if(trees[0].isLeaf()){
+			seqList[count]=trees[0];
+			count++;
+		}
+		if(trees[1].isLeaf()){
+			seqList[count]=trees[1];
+			count++;
+		}
+		if(trees[2].isLeaf()){
+			seqList[count]=trees[2];
+			count++;
+		}
+
+		//calculate weigth
+		//The weights are dependent upon the distance from the root of the tree
+		//but sequences which have a common branch with other sequences share the weight
+		//derived from the shared branch
+		cout<<endl<<"Use Tree Guide for calculate Weigth"<<endl;
+		for(unsigned int i=0; i<seqList.size();i++)
+		{
+			seqList[i].setWeigth(calcWeigth(seqList[i].getRoot()));
+			cout<<seqList[i].getName()<<" "<<seqList[i].getWeigth()<<endl;
+		}
+
+		leafList=&seqList;
+
 		root=tmpT->getRoot();
 
 
@@ -368,12 +443,12 @@ std::vector<double> distance;
     /**
      *
      * */
-    void NewickTree::upgma(Align2::Alignment ali,bool kimuraD, bool verbose){
+    void NewickTree::upgma(Align2::Alignment ali,bool ktuples, bool verbose){
 
     		int Nseq=ali.size()+1;//number of seq
     		vector<vector<double> > distance(Nseq, std::vector<double>(Nseq, 0));
 
-    		vector<Alignment>vet=PhyloSupport::calcAlignmentV(&ali,distance,kimuraD,verbose);
+    		vector<Alignment>vet=PhyloSupport::calcAlignmentV(&ali,distance,ktuples,verbose);
        		vector<NewickTree> trees(Nseq);
 
 
@@ -541,6 +616,14 @@ std::vector<double> distance;
 
     }
 
+    double NewickTree::calcWeigth(iNode* seq){
+    	double w=seq->branchLength;
+    	if(seq->parent!=NULL){
+    		w+=( calcWeigth(seq->parent)/(seq->parent->numberOfChildren) );
+    	}
+    	return w;
+    }
+
 
     /**
      * Return max values of this node children branchLength.
@@ -584,6 +667,16 @@ std::vector<double> distance;
     void NewickTree::setRdiv(double val){
     	root->divergenceR=val;
     }
+
+
+   void NewickTree::setParent(NewickTree *pTree) {
+		root->parent=pTree->getParent();
+	}
+
+   void NewickTree::setWeigth(double w){
+	   root->weigth=w;
+   }
+
 
 
 }} // namespace

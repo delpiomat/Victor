@@ -65,7 +65,7 @@ namespace Victor { namespace Phylo{
 	}
 
 
-	vector<Alignment> PhyloSupport::calcAlignmentV(Alignment *aliSec, vector<vector<double> > &distance , bool kimura,bool verbose){
+	vector<Alignment> PhyloSupport::calcAlignmentV(Alignment *aliSec, vector<vector<double> > &distance , bool ktuples,bool verbose){
 		string seq1Name, seq2Name, seq1, seq2, sec1, sec2;
 
 		Alignment newAli;
@@ -156,8 +156,10 @@ namespace Victor { namespace Phylo{
 					ERROR("No output alignments generated.", exception);
 
 				a2[0].cutTemplate(1);
-				if(kimura==true)
-					score=PhyloSupport::distanceCalcTwoSeqKimura(a2[0].getTarget(),a2[0].getTemplate(0));
+				if(ktuples==true)
+				{
+					score=PhyloSupport::distanceCalcTwoSeqktuples(a2[0].getTarget(),a2[0].getTemplate(0));
+				}
 				else
 					score=PhyloSupport::distanceCalcTwoSeq(a2[0].getTarget(),a2[0].getTemplate(0));
 				distance[index][j]=score;
@@ -203,25 +205,28 @@ namespace Victor { namespace Phylo{
 
 
    /**
-    *  Calculate the distance for two sequence by Kimura formula.
-    *  p=fraction of difference amino acids from seq1 and seq2
-    *  Kimura distance from seq1,seq2=−ln(1−p−0.2*p^2)
-    *  its very nice if seq1 seq2 not have big divergence(p<0,7).
+    *  Calculate the distance for two sequence by ktuples formula.
+    *  return number of k-tuples (number of residues identical) minus
+	*	constant penality for each gap.
     *
     */
-  double PhyloSupport::distanceCalcTwoSeqKimura(string seq1,string seq2){
+  double PhyloSupport::distanceCalcTwoSeqktuples(string seq1,string seq2){
        if (seq1.length() != seq2.length())
            cout << "Warning: sequence lengths do not match:\n"
                << "seq1 = " << seq1.length() << "\n"
            << "seq2 = " << seq2.length() << "\n";
 
-       double p = 0;
+       double penality = 0;
+       double d=0;
        for (unsigned int i = 0; i < seq1.length(); i++){
-           if ( seq1[i] != seq2[i])
-               p++;
+    	   if(seq1[i]=='-' || seq2[i]=='-')
+    		   penality+=1;
+    	   else if( seq1[i] == seq2[i] )
+               d++;
        }
-       p=p/seq1.length();
-       return  -log(1-p-(0.2*p*p));
+       penality=(penality/seq1.length())*0.9*d;
+
+       return 1-((d-penality)/seq1.length());
    }
 
 
@@ -254,9 +259,10 @@ namespace Victor { namespace Phylo{
 	     */
 		void PhyloSupport::printMatrix(vector<vector<double> > &distance){
 			string sMatrix="";
-			for(int i=0; i<distance.size();i++){
-				for(int j=0; j<distance.size();j++){
-					cout<<std::setprecision(3)<<distance[i][j]<<" ";
+			//std::setprecision(3)//for minus precision
+			for(unsigned int i=0; i<distance.size();i++){
+				for(unsigned int j=0; j<distance.size();j++){
+					cout<<distance[i][j]<<" ";
 				}
 				cout<<endl;
 			}

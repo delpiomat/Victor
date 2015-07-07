@@ -37,9 +37,12 @@ struct iNode
 	string allignSeq;
 	iNode *left;
 	iNode *right;
+	iNode *parent;
+	int numberOfChildren;
 	bool isLeaf;
 	double branchLength;
-	double divergenceR;
+	double divergenceR;//for NJ
+	double weigth;//for ClustalW
 };
 
 // Global constants, typedefs, etc. (to avoid):
@@ -68,18 +71,28 @@ namespace Victor { namespace Phylo {
 
     	iNode*getLeftChild();
 
+    	iNode*getParent();
+
         string getName();
 
         double getValueOFChildBranchLength();
 
         double getRdiv();
 
+        bool isLeaf();
+
+        int getNumOfChildren();
+
+        double getWeigth();
+
 
 	    // OPERATORS:
         void setBranchLength(double val);
-	    void neighborJoining(Align2::Alignment ali,bool kimuraD=false, bool verbose=false);
-	    void upgma(Align2::Alignment ali, bool kimuraD=false, bool verbose=false);
+	    void neighborJoining(Align2::Alignment ali,bool ktuples=false, bool verbose=false);
+	    void upgma(Align2::Alignment ali, bool ktuples=false, bool verbose=false);
 	    void setRdiv(double val);
+	    void setParent(NewickTree *pTree);
+	    void setWeigth(double w);
 
 
         /// Print in a string the tree using Newick format
@@ -88,10 +101,11 @@ namespace Victor { namespace Phylo {
     protected:
         // HELPERS:
         string printNewickTreeNode(iNode node);
+        double calcWeigth(iNode* seq);
 
     // ATTRIBUTES:
         iNode *root;
-
+        vector<NewickTree> *leafList;
 
 
     private:

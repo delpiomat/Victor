@@ -49,10 +49,10 @@ namespace Victor { namespace Phylo {
 
         //STATIC
         //Calc multi Align
-        static vector<Alignment> calcAlignmentV(Alignment *aliSec, vector<vector<double> > &distance, bool kimura=false, bool verbose=false);
+        static vector<Alignment> calcAlignmentV(Alignment *aliSec, vector<vector<double> > &distance, bool ktuples=false, bool verbose=false);
         //Calc distance from 2 seq of DNA or protein
         static double distanceCalcTwoSeq(string seq1,string seq2);
-        static double distanceCalcTwoSeqKimura(string seq1,string seq2);
+        static double distanceCalcTwoSeqktuples(string seq1,string seq2);
         static std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
         static std::vector<std::string> split(const std::string &s, char delim);
         static double calcDivR(vector<double> vDist);
