@@ -65,7 +65,7 @@ namespace Victor { namespace Phylo{
 	}
 
 
-	vector<Alignment> PhyloSupport::calcAlignmentV(Alignment *aliSec, vector<vector<double> > &distance , bool kimura){
+	vector<Alignment> PhyloSupport::calcAlignmentV(Alignment *aliSec, vector<vector<double> > &distance , bool kimura,bool verbose){
 		string seq1Name, seq2Name, seq1, seq2, sec1, sec2;
 
 		Alignment newAli;
@@ -107,7 +107,7 @@ namespace Victor { namespace Phylo{
 
 		//Global Align
 		Align *a;
-		cout << "\nSuboptimal Needleman-Wunsch alignments:\n" << endl;
+		cout << "Start Suboptimal Needleman-Wunsch alignments:" << endl;
 
 		double suboptPenaltyMul=1;
 		double suboptPenaltyAdd=1;
@@ -123,7 +123,8 @@ namespace Victor { namespace Phylo{
 		double score=0;
 		//size not count target. so +1
 		for(unsigned int index=0;index<aliSec->size()+1;index++){
-			cout<<" index="<<index;
+			if(verbose)
+				cout<<" index="<<index;
 			if(index==aliSec->size()){
 				seq1 = Alignment::getPureSequence(aliSec->getTarget());
 				seq1Name = aliSec->getTargetName();
@@ -133,7 +134,8 @@ namespace Victor { namespace Phylo{
 				seq1Name = aliSec->getTemplateName(index);
 			}
 			for(unsigned int j=0;j<aliSec->size()+1;j++){
-				cout<<" j="<<index;
+				if(verbose)
+					cout<<" j="<<index;
 				if(j==aliSec->size()){
 					seq2 = Alignment::getPureSequence(aliSec->getTarget());
 					seq2Name = aliSec->getTargetName();
@@ -159,19 +161,17 @@ namespace Victor { namespace Phylo{
 				else
 					score=PhyloSupport::distanceCalcTwoSeq(a2[0].getTarget(),a2[0].getTemplate(0));
 				distance[index][j]=score;
-				cout<<"SCORE="<<distance[index][j]<<" ";
+				if(verbose)
+					cout<<"SCORE="<<distance[index][j]<<" ";
 				if(j==0)
 					newAli = a2[0];
 				else
 					newAli.addAlignment(a2[0]);
 			}//end for j
-			cout<<"ultima seq1 "<<seq1Name<<endl;
-			cout<<"corrisponde al target "<<newAli.getTargetName()<<endl;
-			cout<<"ultima seq2 "<<seq2Name<<endl;
-			cout<<"fine j"<<"AlignV ha size "<<alignV.size()<<endl;
-
-			cout<<"ongi align vale?"<<newAli.size()<<endl;
-
+			if(verbose){
+				cout<<" seq1= "<<seq1Name<<endl;
+				cout<<" seq2= "<<seq2Name<<endl;
+			}
 			alignV[index]=newAli;
 		}//end for index
 
@@ -180,10 +180,10 @@ namespace Victor { namespace Phylo{
 	}
 
     /**
-     *  Calculate the distance for two sequence. distance = 1-identity
-     *  Identity=Calculates the identity as the number of identical positions,
+     *  Calculate the distance for two sequence. distance = 1-identity(PID)
+     *  Percent sequence identity (PID)=Calculates the identity as the number of identical positions,
      *  it gives a positive value when the two sequences have a gap in the same position,
-     *  divided by the length of the alignment
+     *  divided by the length of the alignment.
      *
      */
    double PhyloSupport::distanceCalcTwoSeq(string seq1,string seq2){
@@ -256,7 +256,7 @@ namespace Victor { namespace Phylo{
 			string sMatrix="";
 			for(int i=0; i<distance.size();i++){
 				for(int j=0; j<distance.size();j++){
-					cout<<distance[i][j]<<" ";
+					cout<<std::setprecision(3)<<distance[i][j]<<" ";
 				}
 				cout<<endl;
 			}

@@ -77,8 +77,8 @@ namespace Victor { namespace Phylo {
 
 	    // OPERATORS:
         void setBranchLength(double val);
-	    void neighborJoining(Align2::Alignment ali,bool kimuraD=false);
-	    void upgma(Align2::Alignment ali,bool kimuraD=false);
+	    void neighborJoining(Align2::Alignment ali,bool kimuraD=false, bool verbose=false);
+	    void upgma(Align2::Alignment ali, bool kimuraD=false, bool verbose=false);
 	    void setRdiv(double val);
 
 

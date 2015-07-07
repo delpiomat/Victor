@@ -65,12 +65,13 @@ sShowHelp() {
             << "\n   [-e <double>]     \t Extension gap penalty (default = 3.00)"
             << "\n"
             << "\n   [--cluster <0|1>] \t CLuster function (default = 0, i.e. UPGMA)"
-            << "\n                     \t --gf=0: UPGMA (Affine Gap Penalty) Cluster (default)."
-            << "\n                     \t --gf=1: NJ (Variable Gap Penalty) Cluster."
+            << "\n                     \t --gf=0: UPGMA (default)."
+            << "\n                     \t --gf=1: NJ."
             << "\n   [--cSeq <double>] \t Coefficient for sequence alignment (default = 0.80)"
             << "\n   [--cStr <double>] \t Coefficient for structural alignment (default = 0.20)"
             << "\n"
-            << "\n   [--verbose]       \t Verbose mode"
+			<< "\n   [--kimura]     	\t use kimura formula for calculate distance of pairwise sequence"
+            << "\n   [--verbose]       	\t Verbose mode"
             << "\n" << endl;
 }
 
@@ -83,7 +84,8 @@ int main(int argc, char **argv) {
     double openGapPenalty, extensionGapPenalty;
     unsigned int  gapFunction, cluster;
     double cSeq, cStr;
-    bool verbose;
+    bool verbose=false;
+    bool kimura=false;
     struct tm* newtime;
     time_t t;
 
@@ -110,8 +112,8 @@ int main(int argc, char **argv) {
 	getArg("-cSeq", cSeq, argc, argv, 0.80);
 	getArg("-cStr", cStr, argc, argv, 0.20);
 
+	kimura = getArg("-kimura", argc, argv);
 	verbose = getArg("-verbose", argc, argv);
-
 
     // --------------------------------------------------
     // 1. Load FASTA
@@ -140,13 +142,13 @@ int main(int argc, char **argv) {
 	string out="Error Tree";
 	if(cluster==0){
 		cout<<"##########################################Starting PhyloTreeUPGMA#####################################"<<endl;
-		tree.upgma(aliSec,true);
+		tree.upgma(aliSec,kimura,verbose);
 		cout<<"##########################################Tree create with PhyloTreeUPGMA#############################"<<endl;
 		out=tree.printNewickTree();
 	}
 	else if(cluster==1){
 		cout<<"##########################################Starting PhyloTreeNJ########################################"<<endl;
-		tree.neighborJoining(aliSec);
+		tree.neighborJoining(aliSec,kimura,verbose);
 		cout<<"##########################################Tree create with PhyloTreeNJ################################"<<endl;
 		out=tree.printNewickTree();
 	}
@@ -167,25 +169,7 @@ int main(int argc, char **argv) {
 		cout<<out<<endl;
 	}
 
-	string sequ1="AAAA--BAAAAAACAAA--------AAAAACAAA";
-	string sequ2="A-AA-ABAAAAACCAAAAA--AABAAAABBBBBB";
-	string sequ3="AAAABAAAAAACAAAAAAAACAAA";
-	string sequ4="AAAACCAAAAAAABAAAABBBBBB";
-	cout<<"Kimura distance of "<<sequ1<<" and "<<sequ2<<" ="<<PhyloSupport::distanceCalcTwoSeqKimura(sequ1,sequ2)<<endl;
-	cout<<"Kimura distance of "<<sequ2<<" and "<<sequ1<<" ="<<PhyloSupport::distanceCalcTwoSeqKimura(sequ2,sequ1)<<endl;
-	cout<<"Phylo distance of "<<sequ1<<" and "<<sequ2<<" ="<<PhyloSupport::distanceCalcTwoSeq(sequ1,sequ2)<<endl;
-	cout<<"Phylo distance of "<<sequ2<<" and "<<sequ1<<" ="<<PhyloSupport::distanceCalcTwoSeq(sequ2,sequ1)<<endl;
-	cout<<"Align2 Victor distance of "<<sequ1<<" and "<<sequ2<<" ="<<1-aliSec.calculatePairwiseIdentity(sequ1,sequ2)<<endl;
-	cout<<"Align2 Victor distance of "<<sequ2<<" and "<<sequ1<<" ="<<1-aliSec.calculatePairwiseIdentity(sequ2,sequ1)<<endl;
-
-	cout<<"Kimura distance of "<<sequ3<<" and "<<sequ4<<" ="<<PhyloSupport::distanceCalcTwoSeqKimura(sequ3,sequ4)<<endl;
-	cout<<"Kimura distance of "<<sequ4<<" and "<<sequ3<<" ="<<PhyloSupport::distanceCalcTwoSeqKimura(sequ4,sequ3)<<endl;
-	cout<<"Phylo distance of "<<sequ3<<" and "<<sequ4<<" ="<<PhyloSupport::distanceCalcTwoSeq(sequ3,sequ4)<<endl;
-	cout<<"Phylo distance of "<<sequ4<<" and "<<sequ3<<" ="<<PhyloSupport::distanceCalcTwoSeq(sequ4,sequ3)<<endl;
-	cout<<"Align2 Victor distance of "<<sequ3<<" and "<<sequ4<<" ="<<1-aliSec.calculatePairwiseIdentity(sequ3,sequ4)<<endl;
-	cout<<"Align2 Victor distance of "<<sequ4<<" and "<<sequ3<<" ="<<1-aliSec.calculatePairwiseIdentity(sequ4,sequ3)<<endl;
-
-	cout<<"fine------------------------------"<<endl;
+	cout<<"------------------------End-------------------------"<<endl;
 
 	return 0;
 
