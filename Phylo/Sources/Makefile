@@ -25,9 +25,9 @@ INC_PATH = -I. -I../../tools/ -I../../Align2/Sources
 # Objects and headers
 #
 
-SOURCES = PhyloSupport.cc NewickTree.cc
+SOURCES = PhyloSupport.cc NewickTree.cc ClustalW.cc
 
-OBJECTS = PhyloSupport.o NewickTree.o
+OBJECTS = PhyloSupport.o NewickTree.o ClustalW.o
 
 TARGETS =  
 

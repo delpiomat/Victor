@@ -85,6 +85,10 @@ namespace Victor { namespace Phylo {
 
         double getWeigth();
 
+        vector<NewickTree> getLeafList();
+
+        	int getNumberOfLeaf();
+
 
 	    // OPERATORS:
         void setBranchLength(double val);
@@ -105,7 +109,7 @@ namespace Victor { namespace Phylo {
 
     // ATTRIBUTES:
         iNode *root;
-        vector<NewickTree> *leafList;
+        vector<NewickTree> leafList;
 
 
     private:

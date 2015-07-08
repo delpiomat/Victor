@@ -50,7 +50,6 @@ std::vector<double> distance;
 
 	NewickTree::NewickTree() {
 
-		leafList=NULL;
 		root=new iNode;
 		root->name="NULL";
 		root->left=NULL;
@@ -68,7 +67,6 @@ std::vector<double> distance;
 
 	NewickTree::NewickTree(int position,string name,string pureSeq,double divR){
 
-		leafList=NULL;
 		root=new iNode;
 		root->left=NULL;
 		root->right=NULL;
@@ -87,7 +85,6 @@ std::vector<double> distance;
 
 	NewickTree::NewickTree(int position,string name,string pureSeq){
 
-		leafList=NULL;
 		root=new iNode;
 		root->left=NULL;
 		root->right=NULL;
@@ -109,7 +106,6 @@ std::vector<double> distance;
 	 *@Description Create new Tree. Used for union two different Tree.
 	 */
 	NewickTree::NewickTree( NewickTree *rTree, NewickTree *lTree) {
-		leafList=NULL;
 		root=new iNode;
 		root->allignSeq="noSeq";
 		root->branchLength=-1;
@@ -173,7 +169,13 @@ std::vector<double> distance;
  	   return root->weigth;
     }
 
+    vector<NewickTree> NewickTree::getLeafList(){
+    	return leafList;
+    }
 
+    int NewickTree::getNumberOfLeaf(){
+    	return leafList.size();
+    }
 
 	// MODIFIERS:
 
@@ -342,7 +344,8 @@ std::vector<double> distance;
 
 			//ccreate ne distance matrix dimension-1
 			distance=tmpdistance;
-			PhyloSupport::printMatrix(distance);
+			if(verbose)
+				PhyloSupport::printMatrix(distance);
 
 			//insert new tree
 			trees.push_back(NewickTree(&trees[mini],&trees[minj]));
@@ -425,14 +428,22 @@ std::vector<double> distance;
 		//The weights are dependent upon the distance from the root of the tree
 		//but sequences which have a common branch with other sequences share the weight
 		//derived from the shared branch
-		cout<<endl<<"Use Tree Guide for calculate Weigth"<<endl;
+		if(verbose)
+			cout<<endl<<"Use Tree Guide for calculate Weigth"<<endl;
 		for(unsigned int i=0; i<seqList.size();i++)
 		{
 			seqList[i].setWeigth(calcWeigth(seqList[i].getRoot()));
-			cout<<seqList[i].getName()<<" "<<seqList[i].getWeigth()<<endl;
+			if(verbose)
+				cout<<seqList[i].getName()<<" "<<seqList[i].getWeigth()<<endl;
 		}
 
-		leafList=&seqList;
+		cout<<"number of leaf"<<endl;
+		cout<<seqList.size()<<endl;;
+
+		leafList=seqList;
+
+		cout<<"number of leaf"<<endl;
+		cout<<leafList.size()<<endl;;
 
 		root=tmpT->getRoot();
 

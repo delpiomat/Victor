@@ -32,6 +32,7 @@
 
 #include <NewickTree.h>
 #include <PhyloSupport.h>
+#include <ClustalW.h>
 
 #include <string>
 #include <vector>
@@ -64,9 +65,10 @@ sShowHelp() {
             << "\n   [-o <double>]     \t Open gap penalty (default = 12.00)"
             << "\n   [-e <double>]     \t Extension gap penalty (default = 3.00)"
             << "\n"
-            << "\n   [--cluster <0|1>] \t CLuster function (default = 0, i.e. UPGMA)"
+            << "\n   [--function <0|1|2>] \t CLuster function (default = 0, i.e. UPGMA)"
             << "\n                     \t --gf=0: UPGMA (default)."
             << "\n                     \t --gf=1: NJ."
+			<< "\n                     \t --gf=2: ClustalW use NJ."
             << "\n   [--cSeq <double>] \t Coefficient for sequence alignment (default = 0.80)"
             << "\n   [--cStr <double>] \t Coefficient for structural alignment (default = 0.20)"
             << "\n"
@@ -82,7 +84,7 @@ int main(int argc, char **argv) {
 
     string inputFileName, outputFileName, matrixFileName, matrixStrFileName;
     double openGapPenalty, extensionGapPenalty;
-    unsigned int  gapFunction, cluster;
+    unsigned int  gapFunction, function;
     double cSeq, cStr;
     bool verbose=false;
     bool ktuples=false;
@@ -103,7 +105,7 @@ int main(int argc, char **argv) {
 
 	getArg("m", matrixFileName, argc, argv, "blosum62.dat");
 
-	getArg("-cluster", cluster, argc, argv, 0);
+	getArg("-function", function, argc, argv, 0);
 
 	getArg("-gf", gapFunction, argc, argv, 0);
 	getArg("o", openGapPenalty, argc, argv, 12.00);
@@ -139,18 +141,29 @@ int main(int argc, char **argv) {
     // --------------------------------------------------
 
 	NewickTree tree;
+	ClustalW cw;
 	string out="Error Tree";
-	if(cluster==0){
+	if(function==0){
 		cout<<"##########################################Starting PhyloTreeUPGMA#####################################"<<endl;
 		tree.upgma(aliSec,ktuples,verbose);
 		cout<<"##########################################Tree create with PhyloTreeUPGMA#############################"<<endl;
 		out=tree.printNewickTree();
 	}
-	else if(cluster==1){
+	else if(function==1){
 		cout<<"##########################################Starting PhyloTreeNJ########################################"<<endl;
 		tree.neighborJoining(aliSec,ktuples,verbose);
 		cout<<"##########################################Tree create with PhyloTreeNJ################################"<<endl;
 		out=tree.printNewickTree();
+	}
+	else if(function==2){
+		cout<<"##########################################Starting PhyloTreeNJ########################################"<<endl;
+		tree.neighborJoining(aliSec,ktuples,verbose);
+		cout<<"##########################################Guide Tree create with PhyloTreeNJ################################"<<endl;
+		out=tree.printNewickTree();
+		cout<<"##########################################Starting ClustalW###############################"<<endl;
+		cout<<"number of leaf from main "<<tree.getNumberOfLeaf()<<endl;
+		cw= ClustalW(tree);
+
 	}
 	else
 	{
