@@ -62,7 +62,7 @@ std::vector<double> distance;
 		root->nseq=-1;
 
 		root->isLeaf=true;
-		root->numberOfChildren=0;
+		root->numberOfChildLeaf=0;
 	}
 
 	NewickTree::NewickTree(int position,string name,string pureSeq,double divR){
@@ -79,7 +79,7 @@ std::vector<double> distance;
 		root->seq=pureSeq;
 		root->nseq=position;
 		root->isLeaf=true;
-		root->numberOfChildren=0;
+		root->numberOfChildLeaf=0;
 	}
 
 
@@ -97,7 +97,7 @@ std::vector<double> distance;
 		root->seq=pureSeq;
 		root->nseq=position;
 		root->isLeaf=true;
-		root->numberOfChildren=0;
+		root->numberOfChildLeaf=0;
 	}
 
 
@@ -111,8 +111,12 @@ std::vector<double> distance;
 		root->branchLength=-1;
 
 		root->isLeaf=false;//internal
-		root->numberOfChildren=rTree->getNumOfChildren()+lTree->getNumOfChildren();
-
+		int  tmp=0;
+		if(rTree->isLeaf())
+			tmp++;
+		if(lTree->isLeaf())
+			tmp++;
+		root->numberOfChildLeaf=tmp+rTree->getNumOfChildren()+lTree->getNumOfChildren();
 		root->name="";
 		root->seq="";
 		root->left=rTree->getRoot();
@@ -152,6 +156,11 @@ std::vector<double> distance;
     	return root->name;
     }
 
+    string NewickTree::getPureSeq(){
+    	return root->seq;
+    }
+
+
     double NewickTree::getRdiv(){
     	return root->divergenceR;
     }
@@ -162,18 +171,18 @@ std::vector<double> distance;
     }
 
     int NewickTree::getNumOfChildren(){
-    	return root->numberOfChildren;
+    	return root->numberOfChildLeaf;
     }
 
     double NewickTree::getWeigth(){
  	   return root->weigth;
     }
 
-    vector<NewickTree> NewickTree::getLeafList(){
-    	return leafList;
+    NewickTree NewickTree::getLeafInPosition(unsigned int index){
+    	return leafList[index];
     }
 
-    int NewickTree::getNumberOfLeaf(){
+    unsigned int NewickTree::getNumberOfLeaf(){
     	return leafList.size();
     }
 
@@ -204,11 +213,11 @@ std::vector<double> distance;
 
 		//Create all node
 		for(unsigned int i=0;i<trees.size();i++){
-			if(i==trees.size()-1)
-				trees[i] = NewickTree(i,PhyloSupport::split(ali.getTargetName(), ' ')[0],ali.getTarget(),PhyloSupport::calcDivR(distance[distance.size()-1]));
-
+			if(i==trees.size()-1){
+				trees[i] = NewickTree(i,PhyloSupport::split(ali.getTargetName(), ' ')[0],Alignment::getPureSequence(ali.getTarget()),PhyloSupport::calcDivR(distance[distance.size()-1]));
+			}
 			else
-				trees[i] = NewickTree(i,PhyloSupport::split(ali.getTemplateName(i), ' ')[0],ali.getTemplate(i),PhyloSupport::calcDivR(distance[i]));
+				trees[i] = NewickTree(i,PhyloSupport::split(ali.getTemplateName(i), ' ')[0],Alignment::getPureSequence(ali.getTemplate(i)),PhyloSupport::calcDivR(distance[i]));
 
 		}
 
@@ -351,16 +360,18 @@ std::vector<double> distance;
 			trees.push_back(NewickTree(&trees[mini],&trees[minj]));
 
 			//insert parent
-			trees[mini].setParent(&trees[trees.size()-1]);
-			trees[minj].setParent(&trees[trees.size()-1]);
+			trees[mini].setParent(trees[trees.size()-1]);
+			trees[minj].setParent(trees[trees.size()-1]);
 
 			//save in array if leaf
 			if(trees[mini].isLeaf()){
 				seqList[count]=trees[mini];
+				trees[mini].setPosition(count);
 				count++;
 			}
 			if(trees[minj].isLeaf()){
 				seqList[count]=trees[minj];
+				trees[minj].setPosition(count);
 				count++;
 			}
 
@@ -388,17 +399,32 @@ std::vector<double> distance;
 				trees[0].setBranchLength(distance[0][1]/2-trees[0].getValueOFChildBranchLength());
 				trees[1].setBranchLength(distance[0][1]/2-trees[1].getValueOFChildBranchLength());
 				tmpT=new NewickTree(&trees[0],&trees[1]);
+				//parent
+				trees[0].setParent(*tmpT);
+				trees[1].setParent(*tmpT);
+
 				trees[2].setBranchLength((distance[1][2]/2+distance[0][2]/2)/2-trees[2].getValueOFChildBranchLength());
 				tmpT->setBranchLength((distance[1][2]/2+distance[0][2]/2)/2-tmpT->getValueOFChildBranchLength());
 				tmpT=new NewickTree(tmpT,&trees[2]);
+
+				//parent
+				trees[2].setParent(*tmpT);
+
 			}
 			else{//min distance 0,2
 				trees[0].setBranchLength(distance[0][2]/2-trees[0].getValueOFChildBranchLength());
 				trees[2].setBranchLength(distance[0][2]/2-trees[2].getValueOFChildBranchLength());
 				tmpT=new NewickTree(&trees[0],&trees[2]);
+				//parent
+				trees[0].setParent(*tmpT);
+				trees[2].setParent(*tmpT);
+
 				trees[1].setBranchLength((distance[1][2]/2+distance[1][0]/2)/2-trees[1].getValueOFChildBranchLength());
 				tmpT->setBranchLength((distance[1][2]/2+distance[1][0]/2)/2-tmpT->getValueOFChildBranchLength());
 				tmpT=new NewickTree(tmpT,&trees[1]);
+				//parent
+				trees[1].setParent(*tmpT);
+
 			}
 
 		}
@@ -406,21 +432,31 @@ std::vector<double> distance;
 			trees[1].setBranchLength(distance[1][2]/2-trees[1].getValueOFChildBranchLength());
 			trees[2].setBranchLength(distance[1][2]/2-trees[2].getValueOFChildBranchLength());
 			tmpT=new NewickTree(&trees[1],&trees[2]);
+			//parent
+			trees[1].setParent(*tmpT);
+			trees[2].setParent(*tmpT);
+
 			trees[0].setBranchLength((distance[0][2]/2+distance[0][1]/2)/2-trees[0].getValueOFChildBranchLength());
 			tmpT->setBranchLength((distance[0][1]/2+distance[0][2]/2)/2-tmpT->getValueOFChildBranchLength());
 			tmpT=new NewickTree(tmpT,&trees[0]);
+			//parent
+			trees[0].setParent(*tmpT);
+
 			}
 
 		if(trees[0].isLeaf()){
 			seqList[count]=trees[0];
+			trees[0].setPosition(count);
 			count++;
 		}
 		if(trees[1].isLeaf()){
 			seqList[count]=trees[1];
+			trees[1].setPosition(count);
 			count++;
 		}
 		if(trees[2].isLeaf()){
 			seqList[count]=trees[2];
+			trees[2].setPosition(count);
 			count++;
 		}
 
@@ -433,17 +469,15 @@ std::vector<double> distance;
 		for(unsigned int i=0; i<seqList.size();i++)
 		{
 			seqList[i].setWeigth(calcWeigth(seqList[i].getRoot()));
+
+
 			if(verbose)
 				cout<<seqList[i].getName()<<" "<<seqList[i].getWeigth()<<endl;
 		}
 
-		cout<<"number of leaf"<<endl;
-		cout<<seqList.size()<<endl;;
 
 		leafList=seqList;
 
-		cout<<"number of leaf"<<endl;
-		cout<<leafList.size()<<endl;;
 
 		root=tmpT->getRoot();
 
@@ -630,7 +664,7 @@ std::vector<double> distance;
     double NewickTree::calcWeigth(iNode* seq){
     	double w=seq->branchLength;
     	if(seq->parent!=NULL){
-    		w+=( calcWeigth(seq->parent)/(seq->parent->numberOfChildren) );
+    		w+=( calcWeigth(seq->parent)/(seq->parent->numberOfChildLeaf) );
     	}
     	return w;
     }
@@ -680,14 +714,18 @@ std::vector<double> distance;
     }
 
 
-   void NewickTree::setParent(NewickTree *pTree) {
-		root->parent=pTree->getParent();
+   void NewickTree::setParent(NewickTree pTree) {
+		root->parent=pTree.getRoot();
 	}
 
    void NewickTree::setWeigth(double w){
 	   root->weigth=w;
    }
 
+
+   void NewickTree::setPosition(unsigned int pos){
+	   root->nseq=pos;
+   }
 
 
 }} // namespace

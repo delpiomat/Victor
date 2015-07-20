@@ -57,7 +57,15 @@ namespace Victor { namespace Phylo {
         static std::vector<std::string> split(const std::string &s, char delim);
         static double calcDivR(vector<double> vDist);
         static void printMatrix(vector<vector<double> > &distance);
+        static vector<string> AlingSvsS(string seq1,string seq2,bool verbose=false);
+        static string insertGapPosition(string seq, int position);
 
+
+        static double openGapPenalty;
+        static double extensionGapPenalty;
+		static double cSeq;
+		static double downs, downa, ups, upa;
+		static unsigned int weightingScheme;
 
 
     protected:

@@ -64,6 +64,15 @@ namespace Victor { namespace Phylo{
 
 	}
 
+    // ATTRIBUTES:
+	double PhyloSupport::openGapPenalty=12;
+	double PhyloSupport::extensionGapPenalty=3;
+	double PhyloSupport::cSeq=0.8;
+	double PhyloSupport::downs=999.9;
+	double PhyloSupport::downa=999.9;
+	double PhyloSupport::ups=999.9;
+	double PhyloSupport::upa=999.9;
+	unsigned int PhyloSupport::weightingScheme=0;
 
 	vector<Alignment> PhyloSupport::calcAlignmentV(Alignment *aliSec, vector<vector<double> > &distance , bool ktuples,bool verbose){
 		string seq1Name, seq2Name, seq1, seq2, sec1, sec2;
@@ -89,18 +98,13 @@ namespace Victor { namespace Phylo{
 		SubMatrix sub(matrixFile);
 
 		//Default gap function
-		double openGapPenalty=12;
-		double extensionGapPenalty=3;
+
 		GapFunction *gf = new AGPFunction(openGapPenalty, extensionGapPenalty);
 
 
 		//Default Structure
 		 Structure *str;
 		 str = 0;
-
-		//Default csep
-		 double cSeq;
-		 cSeq = 1.00;
 
 		//Default ScoringScheme
 		ScoringScheme *ss;
@@ -181,6 +185,78 @@ namespace Victor { namespace Phylo{
 		return alignV;
 	}
 
+
+	vector<string> PhyloSupport::AlingSvsS(string seq1,string seq2,bool verbose){
+
+		string path = getenv("VICTOR_ROOT");
+		if (path.length() < 3)
+			cout << "Warning: environment variable VICTOR_ROOT is not set." << endl;
+
+		string dataPath = path + "data/";
+
+		//n=4? no idea. Default in APP/subali.cc
+		int n=4;
+
+		AlignmentData *ad;
+
+		//Default matrix
+		string matrixFileName="blosum62.dat";
+		matrixFileName = dataPath + matrixFileName;
+		ifstream matrixFile(matrixFileName.c_str());
+		if (!matrixFile)
+			ERROR("Error opening substitution matrix file.", exception);
+		SubMatrix sub(matrixFile);
+
+		//Default gap function
+
+		GapFunction *gf = new AGPFunction(openGapPenalty, extensionGapPenalty);
+
+
+		//Default Structure
+		 Structure *str;
+		 str = 0;
+
+		//Default ScoringScheme
+		ScoringScheme *ss;
+
+		//Global Align
+		Align *a;
+		cout << "Start Suboptimal Needleman-Wunsch alignments:" << endl;
+
+		double suboptPenaltyMul=1;
+		double suboptPenaltyAdd=1;
+
+		unsigned int suboptNum=1;
+
+		vector<Alignment> a2;
+
+
+		ad = new SequenceData(n, seq1, seq2, "seq1", "seq2");
+
+		ss = new ScoringS2S(&sub, ad, str, cSeq);
+
+		a = new NWAlign(ad, gf, ss);
+
+		a->setPenalties(suboptPenaltyMul, suboptPenaltyAdd);
+		a2 = a->generateMultiMatch(suboptNum);
+		if (a2.size() == 0)
+			ERROR("No output alignments generated.", exception);
+		//a2[0].cutTemplate(1);
+		cout<<"NWAlign SvsS OK-------------------"<<endl;
+		vector<string> result(2);
+
+		cout<<"dimension of a2 "<<a2.size()<<" a2[0].getTarget() "<<a2[0].getTarget()<<endl<<" a2[0].getTemplate() "<<a2[0].getTemplate()<<endl<<" a2[0].getScore() "<<a2[0].getScore()<<endl<<""<<""<<""<<""<<endl;
+		result[0]=a2[0].getTarget();
+		result[1]=a2[0].getTemplate();
+		cout<<"result "<<a2.size()<<" result[1] "<<result[1]<<endl<<" result[0] "<<result[0]<<endl;
+		cout<<"NWAlign SvsS Oexit-------------"<<endl;
+		return result;
+}
+
+
+
+
+
     /**
      *  Calculate the distance for two sequence. distance = 1-identity(PID)
      *  Percent sequence identity (PID)=Calculates the identity as the number of identical positions,
@@ -228,6 +304,17 @@ namespace Victor { namespace Phylo{
 
        return 1-((d-penality)/seq1.length());
    }
+
+
+  	  string PhyloSupport::insertGapPosition(string seq, int position){
+  		  string part1="";
+  		  string part2="";
+  		  part1=seq.substr(0,position);
+  		  part2=seq.substr(position+1);
+  		  seq=part1+"-"+part2;
+  		  return seq;
+  	  }
+
 
 
 	std::vector<std::string> &PhyloSupport::split(const std::string &s, char delim, std::vector<std::string> &elems) {

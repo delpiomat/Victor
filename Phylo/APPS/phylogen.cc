@@ -58,20 +58,26 @@ sShowHelp() {
             << "\n   [--out <name>]    \t Name of output file (default = to screen)"
             << "\n   [-m <name>]       \t Name of substitution matrix file (default = blosum62.dat)"
 			<< "\n"
-            << "\n   [--gf <0|1|2>]    \t Gap function (default = 0, i.e. AGP)"
-            << "\n                     \t --gf=0: AGP (Affine Gap Penalty) function (default)."
-            << "\n                     \t --gf=1: VGP (Variable Gap Penalty) function."
-            << "\n                     \t --gf=2: VGP2 (Variable Gap Penalty) function."
-            << "\n   [-o <double>]     \t Open gap penalty (default = 12.00)"
+            << "\n   [-d <double>]     \t Min. master vs all seq. id. filter threshold (suggested = 0.00)"
+            << "\n   [-D <double>]     \t Min. all vs all seq. id. filter threshold (suggested = 0.00)"
+            << "\n   [-u <double>]     \t Max. master vs all seq. id. filter threshold (suggested = 1.00)"
+            << "\n   [-U <double>]     \t Max. all vs all seq. id. filter threshold (suggested = 1.00)"
+			<< "\n"
+            << "\n   [--ws <0|1|2|3>]  \t Weighting scheme for profiles (default = 0, i.e. no weighting scheme)"
+            << "\n                     \t --ws=0: No weighting scheme (default)."
+            << "\n                     \t --ws=1: Calculate a frequency profile or PSSM using Henikoff weighting scheme."
+            << "\n                     \t --ws=2: Calculate a frequency profile or PSSM using PSIC weighting scheme."
+            << "\n                     \t --ws=3: Calculate a frequency profile or PSSM using SeqDivergence weighting scheme."
+			<< "\n"
+			<< "\n   [-o <double>]     \t Open gap penalty (default = 12.00)"
             << "\n   [-e <double>]     \t Extension gap penalty (default = 3.00)"
             << "\n"
             << "\n   [--function <0|1|2>] \t CLuster function (default = 0, i.e. UPGMA)"
             << "\n                     \t --gf=0: UPGMA (default)."
             << "\n                     \t --gf=1: NJ."
 			<< "\n                     \t --gf=2: ClustalW use NJ."
-            << "\n   [--cSeq <double>] \t Coefficient for sequence alignment (default = 0.80)"
-            << "\n   [--cStr <double>] \t Coefficient for structural alignment (default = 0.20)"
-            << "\n"
+            << "\n   [--cSeq <double>] \t Coefficient for sequence alignment (default = 1.0)"
+			<< "\n"
 			<< "\n   [--ktuples]     	\t use ktuples method  formula for calculate distance of pairwise sequence"
             << "\n   [--verbose]       	\t Verbose mode"
             << "\n" << endl;
@@ -85,10 +91,15 @@ int main(int argc, char **argv) {
     string inputFileName, outputFileName, matrixFileName, matrixStrFileName;
     double openGapPenalty, extensionGapPenalty;
     unsigned int  gapFunction, function;
-    double cSeq, cStr;
+    double cSeq;
+    double downs, downa, ups, upa;
     bool verbose=false;
     bool ktuples=false;
+    unsigned int weightingScheme;
+
+
     struct tm* newtime;
+
     time_t t;
 
     // --------------------------------------------------
@@ -107,12 +118,18 @@ int main(int argc, char **argv) {
 
 	getArg("-function", function, argc, argv, 0);
 
+    getArg("-ws", weightingScheme, argc, argv, 0);
+
 	getArg("-gf", gapFunction, argc, argv, 0);
 	getArg("o", openGapPenalty, argc, argv, 12.00);
 	getArg("e", extensionGapPenalty, argc, argv, 3.00);
 
+    getArg("d", downs, argc, argv, 999.9);
+    getArg("D", downa, argc, argv, 999.9);
+    getArg("u", ups, argc, argv, 999.9);
+    getArg("U", upa, argc, argv, 999.9);
+
 	getArg("-cSeq", cSeq, argc, argv, 0.80);
-	getArg("-cStr", cStr, argc, argv, 0.20);
 
 	ktuples = getArg("-ktuples", argc, argv);
 	verbose = getArg("-verbose", argc, argv);
@@ -134,7 +151,17 @@ int main(int argc, char **argv) {
 		if (aliSec.size() < 1)
 			ERROR("Secondary structure FASTA file must contain two sequences.", exception);
 
-
+	// --------------------------------------------------
+	// 2. Setup Param
+	// --------------------------------------------------
+		PhyloSupport::extensionGapPenalty=extensionGapPenalty;
+		PhyloSupport::openGapPenalty=openGapPenalty;
+		PhyloSupport::cSeq=cSeq;
+		PhyloSupport::downs=downs;
+		PhyloSupport::downa=downa;
+		PhyloSupport::ups=downa;
+		PhyloSupport::upa=downa;
+		PhyloSupport::weightingScheme=weightingScheme;
 
     // --------------------------------------------------
     // 3. Load data

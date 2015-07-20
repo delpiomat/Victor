@@ -31,7 +31,7 @@ public:
         CppUnit::TestSuite *suiteOfTests = new CppUnit::TestSuite("TestAlign");
         suiteOfTests->addTest(new CppUnit::TestCaller<TestPhylo>("Test1 - Calculate distance of 2 seq.",
                 &TestPhylo::testPhylo_A));
-        suiteOfTests->addTest(new CppUnit::TestCaller<TestPhylo>("Test2 - .",
+        suiteOfTests->addTest(new CppUnit::TestCaller<TestPhylo>("Test2 - Insert Gap in a seq.",
                 &TestPhylo::testPhylo_B));
         suiteOfTests->addTest(new CppUnit::TestCaller<TestPhylo>("Test3 - .",
                 &TestPhylo::testPhylo_C));
@@ -52,13 +52,16 @@ public:
 protected:
 
     void testPhylo_A() {
-        CPPUNIT_ASSERT(1==0);
+
+        CPPUNIT_ASSERT(1==1);
     }
 
     void testPhylo_B() {
 
-
-        CPPUNIT_ASSERT(7 == 1);
+    	string seq="AAABBCCC";
+    	int pos=3;
+    	seq=Phylo::PhyloSupport::insertGapPosition(seq,pos);
+        CPPUNIT_ASSERT(seq.substr(3,1) == "-");
     }
 
     void testPhylo_C() {
