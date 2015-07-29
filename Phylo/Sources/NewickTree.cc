@@ -56,10 +56,14 @@ std::vector<double> distance;
 		root->right=NULL;
 		root->parent=NULL;
 		root->seq="noPURESeq";
-		root->allignSeq="noSeq";
+		root->allignSeq;
 		root->branchLength=-1;
 		root->divergenceR=0;
 		root->nseq=-1;
+		root->weigthV;
+		root->ClustalW=false;
+		root->isRigth=false;
+		root->isLeft=false;
 
 		root->isLeaf=true;
 		root->numberOfChildLeaf=0;
@@ -71,8 +75,13 @@ std::vector<double> distance;
 		root->left=NULL;
 		root->right=NULL;
 		root->parent=NULL;
-		root->allignSeq="noSeq";
+		root->allignSeq;
 		root->branchLength=-1;
+		root->weigthV;
+		root->ClustalW=false;
+		root->isRigth=false;
+		root->isLeft=false;
+
 
 		root->name=name;
 		root->divergenceR=divR;
@@ -89,8 +98,13 @@ std::vector<double> distance;
 		root->left=NULL;
 		root->right=NULL;
 		root->parent=NULL;
-		root->allignSeq="noSeq";
+		root->allignSeq;
 		root->branchLength=0;
+		root->weigthV;
+		root->ClustalW=false;
+		root->isRigth=false;
+		root->isLeft=false;
+
 
 		root->name=name;
 		root->divergenceR=0;
@@ -107,8 +121,13 @@ std::vector<double> distance;
 	 */
 	NewickTree::NewickTree( NewickTree *rTree, NewickTree *lTree) {
 		root=new iNode;
-		root->allignSeq="noSeq";
+		root->allignSeq;
 		root->branchLength=-1;
+		root->weigthV;
+		root->ClustalW=false;
+		root->isRigth=false;
+		root->isLeft=false;
+
 
 		root->isLeaf=false;//internal
 		int  tmp=0;
@@ -119,8 +138,13 @@ std::vector<double> distance;
 		root->numberOfChildLeaf=tmp+rTree->getNumOfChildren()+lTree->getNumOfChildren();
 		root->name="";
 		root->seq="";
-		root->left=rTree->getRoot();
-		root->right=lTree->getRoot();
+
+		rTree->getRoot()->isRigth=true;
+		root->right=rTree->getRoot();
+
+		lTree->getRoot()->isLeft=true;
+		root->left=lTree->getRoot();
+
 		root->parent=NULL;
 
 		root->divergenceR=0;
@@ -725,6 +749,10 @@ std::vector<double> distance;
 
    void NewickTree::setPosition(unsigned int pos){
 	   root->nseq=pos;
+   }
+
+   void NewickTree::setAlingSeq(vector<string> vSeq){
+	   root->allignSeq=vSeq;
    }
 
 

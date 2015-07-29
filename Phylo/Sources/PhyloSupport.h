@@ -58,7 +58,10 @@ namespace Victor { namespace Phylo {
         static double calcDivR(vector<double> vDist);
         static void printMatrix(vector<vector<double> > &distance);
         static vector<string> AlingSvsS(string seq1,string seq2,bool verbose=false);
+        static vector<string> AlingMultiSvsMultiS(vector <string> seq1,vector <string> seq2,vector <double> vWeigth1,vector <double> vWeigth2,bool verbose=false);
         static string insertGapPosition(string seq, int position);
+        static string intToString( int num );
+
 
 
         static double openGapPenalty;

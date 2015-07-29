@@ -34,7 +34,9 @@ struct iNode
 	string name;
 	int nseq;
 	string seq;//pure seq
-	string allignSeq;
+	vector<string> allignSeq;
+	bool isRigth;
+	bool isLeft;
 	iNode *left;
 	iNode *right;
 	iNode *parent;
@@ -43,6 +45,9 @@ struct iNode
 	double branchLength;
 	double divergenceR;//for NJ
 	double weigth;//for ClustalW
+	vector<double> weigthV;//for ClustalW
+	bool ClustalW;//for ClustalW
+
 };
 
 // Global constants, typedefs, etc. (to avoid):
@@ -100,6 +105,7 @@ namespace Victor { namespace Phylo {
 	    void setParent(NewickTree pTree);
 	    void setWeigth(double w);
 	    void setPosition(unsigned int pos);
+	    void setAlingSeq(vector<string> vSeq);
 
 
         /// Print in a string the tree using Newick format
@@ -118,6 +124,7 @@ namespace Victor { namespace Phylo {
     private:
         // HELPERS:
         void destroy_tree(iNode *leaf);
+
 
     };
 

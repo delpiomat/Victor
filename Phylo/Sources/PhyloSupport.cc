@@ -254,6 +254,219 @@ namespace Victor { namespace Phylo{
 }
 
 
+	vector<string> PhyloSupport::AlingMultiSvsMultiS(vector<string> seq1,vector<string> seq2,vector <double> vWeigth1,vector <double> vWeigth2,bool verbose){
+
+
+			string path = getenv("VICTOR_ROOT");
+			if (path.length() < 3)
+				cout << "Warning: environment variable VICTOR_ROOT is not set." << endl;
+
+			string dataPath = path + "data/";
+
+			//Default matrix
+			string matrixFileName="blosum62.dat";
+			matrixFileName = dataPath + matrixFileName;
+			ifstream matrixFile(matrixFileName.c_str());
+			if (!matrixFile)
+				ERROR("Error opening substitution matrix file.", exception);
+			SubMatrix sub(matrixFile);
+
+
+			//cout<<"le sequenze sono lunghe"<<seq1[0].size()<<" "<<seq2[0].size()<<endl;
+			vector< vector<double> > scoreM(seq1[0].size(), vector<double>(seq2[0].size()));
+
+			for(unsigned int i=0;i<scoreM.size();i++)
+			{
+				for(unsigned int j=0;j<scoreM[0].size();j++)
+				{
+					scoreM[i][j]=0;
+					for(unsigned int k=0;k<seq1.size();k++)
+					{
+						for(unsigned int w=0;w<seq2.size();w++)
+						{
+							//cout<<"score("<<i<<"-"<<j<<")= "<<seq1[k][i]<<" "<<seq2[w][j]<<" usando blosum da "<<sub.score[seq1[k][i]][seq2[w][j]]<<" peso "<<vWeigth1[k]<<" "<<vWeigth2[w]<<endl;
+							scoreM[i][j]+=(sub.score[seq1[k][i]][seq2[w][j]])*(vWeigth1[k]*vWeigth2[w]);
+						}
+					}
+					if(i!=j){
+						scoreM[i][j]-=scoreM[i][j]/(2*(abs(i-j)));
+					}
+					//cout<<scoreM[i][j]<<"\t ";
+				}
+				//cout<<endl<<endl;
+			}
+
+
+			unsigned int i=scoreM.size()-1;
+			unsigned int j=scoreM[0].size()-1;
+			cout<<"\t \t \t ---------start multi Align -----------------score i j max"<<scoreM[i][j]<<endl;
+			unsigned int tempI=i;
+			unsigned int tempJ=j;
+			for(unsigned int w=i-1;w<scoreM.size()-1;w++)
+			{
+				if(w!=0)
+				{
+					if(scoreM[w][j]>scoreM[tempI][j])
+						tempI=w;
+				}
+			}
+			for(unsigned int w=j-1;w<scoreM[0].size()-1;w++)
+			{
+				if(w!=0)
+				{
+					if(scoreM[i][w]>scoreM[i][tempJ])
+						tempJ=w;
+				}
+			}
+			bool up=false;
+			bool vertical=false;
+			if(scoreM[tempI][j]>scoreM[i][tempJ]){
+				i=tempI;
+				up=true;
+			}
+			else{
+				vertical=true;
+				j=tempJ;
+			}
+
+			if(up)
+			{
+				for(unsigned int h=0;h<(scoreM.size()-1)-i;h++){
+					for(unsigned int w=0; w<seq1.size();w++ )
+					{
+						seq1[w]=PhyloSupport::insertGapPosition(seq1[w],seq1[w].size());
+					}
+				}
+			}else
+			{
+				for(unsigned int h=0;h<(scoreM[0].size()-1)-j;h++){
+					for(unsigned int w=0; w<seq2.size();w++ )
+					{
+						seq2[w]=PhyloSupport::insertGapPosition(seq2[w],seq2[w].size());
+					}
+				}
+			}
+
+
+			while(i!=0 && j!=0){
+
+				//cout<<"max{"<<scoreM[i-1][j]<<" "<<scoreM[i-1][j-1]<<" "<<scoreM[i][j-1]<<"}  "<<endl;
+
+				if(scoreM[i-1][j-1]>=scoreM[i-1][j] && scoreM[i-1][j-1]>=scoreM[i][j-1])
+				{
+						i--;
+						j--;
+						//cout<<"diagonal "<<scoreM[i][j]<<endl;
+				}
+				else if(scoreM[i-1][j]>scoreM[i-1][j-1] && scoreM[i-1][j]>scoreM[i][j-1])
+				{
+					for(unsigned int w=0; w<seq1.size();w++ )
+					{
+						seq1[w]=PhyloSupport::insertGapPosition(seq1[w],i);
+					}
+					i--;
+					//cout<<"up "<<scoreM[i][j]<<endl;
+				}
+				else{
+
+					for(unsigned int w=0; w<seq2.size();w++ )
+					{
+						//cout<<seq2[w]<<endl;
+						seq2[w]=PhyloSupport::insertGapPosition(seq2[w],j);
+					//	cout<<"insert GAP in position "<<j<<endl;
+						//cout<<seq2[w]<<endl;
+					}
+					j--;
+				//	cout<<"left "<<scoreM[i][j]<<endl;
+				}
+				//cout<<endl;
+
+			}
+			cout<<"find the good way"<<endl;
+
+			vector<string> seqFinal(seq1.size()+seq2.size());
+
+			cout<<"seq1 "<<seq1.size()<<" seq2 "<<seq2.size()<<endl;
+			cout<<"seqFinal size "<<seqFinal.size()<<endl;
+
+			cout<<"seq1[0] size "<<seq1[0].size()<<" seq2[0] size"<<seq2[0].size()<<endl;
+
+
+			bool onlyGap=true;
+			while(seq1[0].size()<seq2[0].size() && onlyGap){
+
+				for(unsigned int g=0;g<seq2.size();g++){
+					//cout<<seq2[g]<<endl<<endl;
+					if(seq2[g][0]!='-'){
+						onlyGap=false;
+					}
+				}
+
+				if(!onlyGap){
+					for(unsigned int w=0; w<seq1.size();w++)
+					{
+						//cout<<"uno dei seq1 "<<seq1[w]<<endl<<endl;
+						seq1[w]=PhyloSupport::insertGapPosition(seq1[w],0);
+					}
+				}
+				else{
+					for(unsigned int g=0;g<seq2.size();g++){
+						//cout<<"uno dei seq1 "<<seq1[w]<<endl<<endl;
+						seq2[g]=seq2[g].substr(1);
+					}
+				}
+				onlyGap=true;
+			}
+			cout<<"seq1[0] "<<seq1[0].size()<<" seq2[0] "<<seq2[0].size()<<endl;
+
+			onlyGap=true;
+			while(seq2[0].size()<seq1[0].size() && onlyGap){
+				for(unsigned int g=0;g<seq1.size();g++){
+					//cout<<seq1[g]<<endl<<endl;
+					if(seq1[g][0]!='-'){
+						onlyGap=false;
+					}
+				}
+
+				if(!onlyGap){
+					for(unsigned int w=0; w<seq2.size();w++)
+					{
+						seq2[w]=PhyloSupport::insertGapPosition(seq2[w],0);
+					}
+				}
+				else{
+					for(unsigned int g=0;g<seq1.size();g++){
+						seq1[g]=seq1[g].substr(1);
+					}
+				}
+				onlyGap=true;
+			}
+
+			//cout<<"seq1"<<endl;
+			for(unsigned int w=0; w<seq1.size();w++ )
+			{
+				//cout<<"della seq size= "<<seq1[w].size()<<endl;
+				//cout<<seq1[w]<<endl<<endl;
+				seqFinal[w]=seq1[w];
+			}
+			//cout<<endl;
+			//cout<<"seq2"<<endl;
+			for(unsigned int w=0; w<seq2.size();w++ )
+			{
+				//cout<<"della seq size= "<<seq2[w].size()<<endl;
+				//cout<<seq2[w]<<endl<<endl;
+
+				seqFinal[w+seq1.size()]=seq2[w];
+			}
+			cout<<"\t \t \t ---------finish multi Align prima del return----------------"<<endl;
+			return seqFinal;
+	}
+
+
+
+
+
+
 
 
 
@@ -310,7 +523,7 @@ namespace Victor { namespace Phylo{
   		  string part1="";
   		  string part2="";
   		  part1=seq.substr(0,position);
-  		  part2=seq.substr(position+1);
+  		  part2=seq.substr(position);
   		  seq=part1+"-"+part2;
   		  return seq;
   	  }
@@ -355,6 +568,13 @@ namespace Victor { namespace Phylo{
 			}
 		}
 
+
+		string PhyloSupport::intToString ( int num )
+		  {
+		     ostringstream ss;
+		     ss << num;
+		     return ss.str();
+		  }
 
 
 }} // namespace
