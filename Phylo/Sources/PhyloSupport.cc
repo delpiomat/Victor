@@ -465,7 +465,13 @@ namespace Victor { namespace Phylo{
 
 
     vector<string> PhyloSupport::AlingMultiSvsMultiS2(vector <string> seq1,vector <string> seq2,vector <double> vWeigth1,vector <double> vWeigth2,bool verbose){
-    	int tokenSize=5;
+    	int tokenSize=3	;
+    	string gap="-";
+    	string tokenSizeGap="";
+    	for(unsigned int i=0;i<tokenSize;i++){
+    		tokenSizeGap+=gap;
+    	}
+
     	cout<<"AlingMultiSvsMultiS2"<<endl;
  		while(seq1[0].size()%tokenSize!=0){
  			for(unsigned int i=0;i<seq1.size();i++){
@@ -489,18 +495,13 @@ namespace Victor { namespace Phylo{
     		{//for all seq[j]
     			tempSV[j]=seq1[j].substr(i,tokenSize);
     		}
-    		/*cout<<"------i "<<i<<endl;
-    		cout<<"------seq1[0].size( )"<<seq1[0].size()<<endl;
-    		cout<<"------i "<<i<<endl;
-       		cout<<"------tempSV.size() "<<tempSV.size()<<endl;
-    		cout<<"------tempSV[0].size() "<<tempSV[0].size()<<endl;
-    		cout<<"------tempSV[0] "<<tempSV[0]<<endl;
-    		cout<<"------seq1[0].size()/tokenSize "<<seq1[0].size()/tokenSize<<endl;*/
 
-    		tokenS1[i]= new SeqNodeGraph(i,i-1+tokenSize,seq1.size(),tempSV,seq2.size());
+    		tokenS1[i]= new SeqNodeGraph(i,i-1+tokenSize,seq1.size(),tempSV,seq2[0].size()/tokenSize);
 
-    		//cout<<"------tokenS1.size() "<<tokenS1.size()<<endl;
     	}
+
+    	cout<<"dimensione delle sequezne seq1[0].size()="<<seq1[0].size()<<" seq2[0].size() "<<seq2[0].size()<<endl;
+
 
     	for(unsigned int i=0; i<seq2[0].size()/tokenSize;i++)
     	{
@@ -509,26 +510,61 @@ namespace Victor { namespace Phylo{
     		{
     			tempSV[j]=seq2[j].substr(i,tokenSize);
     		}
-    		cout<<"------i "<<i<<endl;
-    		cout<<"------seq2[i].size( )"<<seq2[i].size()<<endl;
-    		cout<<"------tempSV.size() "<<tempSV.size()<<endl;
-    		cout<<"------tempSV[0].size() "<<tempSV[0].size()<<endl;
-    		cout<<"------tempSV[0] "<<tempSV[0]<<endl;
-    		cout<<"------seq2[0].size()/tokenSize "<<seq2[0].size()/tokenSize<<endl;
-    		tokenS2[i]= new SeqNodeGraph(i,i-1+tokenSize,seq2.size(),tempSV,seq1.size());
+;
+    		tokenS2[i]= new SeqNodeGraph(i,i-1+tokenSize,seq2.size(),tempSV,seq1[0].size()/tokenSize);
     	}
 
-    	for(unsigned int i=0; i<tokenS1.size();i++){
-    		cout<<"dentro for di setnode "<<tokenS1.size()<<endl;
-    		cout<<i<<" la media prima"<<tokenS1[i]->getAverageTax()<<endl;
-    		SeqNodeGraph::setNode(tokenS1[i],tokenS2);
-    		cout<<" la media dopo"<<endl;
-    		//cout<<" la media dopo"<<tokenS1[i].getAverageTax()<<endl;
 
+
+    	for(unsigned int i=0; i<tokenS1.size();i++){
+    		cout<<"i "<<i<<" token size totale="<<tokenS1.size()<<endl;
+    		SeqNodeGraph::setNode(tokenS1[i],tokenS2);
 		}
 
+    	vector <int> edgeFor2(tokenS2.size(),-1);
+    	vector <int> edgeFor1(tokenS1.size(),-1);
+    	vector <string> finalS(seq1.size()+seq2.size());
+    	unsigned int count1=0;
+    	unsigned int count2=0;
+    	while(count1<tokenS1.size() && count2<tokenS2.size()){
 
-    	return seq1;
+    		edgeFor1[count1]=tokenS1[count1]->returnBestEdgeAfterIndex(count2);
+    		count2=edgeFor1[count1];
+    		count1++;
+
+    	}
+
+    	for(unsigned int i=0; i<edgeFor1.size();i++){
+    		cout<<edgeFor1[i]<<" ";
+    	}
+    	cout<<endl;
+    	for(unsigned int i=0; i<edgeFor2.size();i++){
+    		cout<<edgeFor2[i]<<" ";
+    	}
+    	cout<<endl;
+
+    	for(unsigned int i=0; i<edgeFor1[0];i++){
+    		for(unsigned int j=0; j<seq1.size();j++){
+    			finalS[j]="";
+    			finalS[j]+=tokenSizeGap;
+    		}
+    	}
+
+    	for(unsigned int i=0; i<seq1.size();i++){
+    		finalS[i]+=seq1[i];
+    	}
+    	for(unsigned int i=0; i<seq1.size();i++){
+
+
+
+    	cout<<"la seq alla fine"<<endl;
+    	for(unsigned int i=0; i<finalS.size();i++){
+    		cout<<finalS[i]<<endl;
+    	}
+
+
+    	return finalS;
+
     }
 
 

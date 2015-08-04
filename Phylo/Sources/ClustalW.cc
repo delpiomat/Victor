@@ -159,12 +159,12 @@ namespace Victor { namespace Phylo{
 
 		cout<<"endl clustaW"<<endl;*/
 
-		string one="ACATAGCATAAAT";
-		string two="ACATACATAAATG";
+		string one="CCCCCCAAAAAAGGGGGGTTTTTTAAAAAAAT";
+		string two="CCCCCCAAAAAAGGGGGGTTTTTTAAAAAAAT";
 
-		string a="ACATACATGAAATG";
-		string b="ACATACATAGGAAT";
-		string c="ACATACATAAAGGT";
+		string a="CCCCCCAAAAAAGGGGGGTTTTTTAAAAAAAT";
+		string b="ACACACATACACACATACACACATACACACAT";
+		string c="ACACACATACACACATACACACATACACACAT";
 
 		vector <string> num(2);
 		num[0]=one;

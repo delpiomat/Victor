@@ -56,13 +56,13 @@ namespace Victor { namespace Phylo{
 
 
 	//totNumSeq how much of seq in this node minimun 1
-	//how much seq in the seq2 important for size of vector TaxEge;
+	//numSeqInS2 how much seq in the seq2 important for size of vector TaxEge;
 	//Weigth depends on guide tree;
 	SeqNodeGraph::SeqNodeGraph(unsigned int indexS,unsigned int indexF, unsigned int totNumS,vector <string> tokenS,unsigned int numSeqInS2){
 		indexStart=indexS;
 		indexFinish=indexF;
 		totNumSeq=totNumS;
-		vector <double> taxV(totNumSeq);
+		vector <double> taxV(numSeqInS2);
 		taxEdge=taxV;
 		tokenSeq=tokenS;
 		tokenSize=tokenSeq[0].size();
@@ -80,6 +80,33 @@ namespace Victor { namespace Phylo{
 	}
 
 	// PREDICATES:
+	unsigned int SeqNodeGraph::returnBestEdge(){
+		unsigned int best=0;
+		for(unsigned int i=0; i<taxEdge.size();i++){
+			if(taxEdge[best]<taxEdge[i]){
+				best=i;
+			}
+		}
+		return best;
+	}
+
+
+	int SeqNodeGraph::returnBestEdgeAfterIndex(unsigned index){
+		unsigned int best=index+1;
+		for(unsigned int i=index+1; i<taxEdge.size();i++){
+			if(taxEdge[best]<taxEdge[i]){
+				best=i;
+			}
+		}
+		if(best>=taxEdge.size())
+			best=-1;
+		return best;
+	}
+
+	string SeqNodeGraph::getTokenSeq(unsigned int index){
+		return tokenSeq[index];
+	}
+
     int SeqNodeGraph::getIndexStart(){
     	return indexStart;
     }
@@ -155,21 +182,16 @@ namespace Victor { namespace Phylo{
 
     	for(unsigned int i=0; i<vNode.size( );i++)
     	{//how much long vNode, how many node[i] in vNode
-    		cout<<"for1 i"<<i<<"v node size"<<vNode.size( )<<endl;
     		for(unsigned int j=0; j<vNode[i]->getTotNumSeq() ;j++)
 			{//how seq in  node[i] of vNode
-    			cout<<"for2 j"<<j<<"v node gettot numseq"<<vNode[i]->getTotNumSeq()<<endl;
     			for(unsigned int x=0; x<vNode[i]->getTokenSize();x++)
     			{//for all char in one string in node[i] of vNode
-    				cout<<"for3"<<endl;
     				for(unsigned int y=0; y<node->getTotNumSeq();y++)
     				{//for all token of string in node
-    					cout<<"for4"<<endl;
     					for(unsigned int w=0; w<node->getTotNumSeq();w++)
     					{//for all char in each seq of node
-    						cout<<"for5"<<endl;
     						node->setTaxEdgeInPosition(i,sub.score[node->getCharOfTokenSeq(y,w)][vNode[i]->getCharOfTokenSeq(j,x)]);
-    						cout<<"\t lo score in posizione i "<<node->getTaxEdgeInPosition(i)<<endl;
+    						//cout<<"\t lo score in posizione i "<<node->getTaxEdgeInPosition(i)<<endl;
     					}//end for
 
     				}//end for

@@ -52,10 +52,13 @@ namespace Victor { namespace Phylo {
         int getIndexStart();
         int getIndexFinish();
         unsigned int getTotNumSeq();
+        string getTokenSeq(unsigned int index);
         double getTaxEdgeInPosition(unsigned int i);
         char getCharOfTokenSeq(unsigned int seqNum,unsigned int pos);
         unsigned int getTokenSize();
         double getAverageTax();
+        unsigned int returnBestEdge();
+        int returnBestEdgeAfterIndex(unsigned int index);
 
 	    // OPERATORS:
         void setIndexStart(unsigned int i);
