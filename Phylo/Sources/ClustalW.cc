@@ -62,7 +62,7 @@ namespace Victor { namespace Phylo{
 
 	void ClustalW::progressiveAlign(){
 
-		cout<<" Progressive alignament Start "<<endl;
+		/*cout<<" Progressive alignament Start "<<endl;
 		vector<string> tmpV(2);
 		vector<double> tmpWeigth(2);
 
@@ -157,7 +157,34 @@ namespace Victor { namespace Phylo{
 
 		cout<<endl<<ClustalW::printClustalWFromat(nodeTree[0]->allignSeq)<<endl;
 
-		cout<<"endl clustaW"<<endl;
+		cout<<"endl clustaW"<<endl;*/
+
+		string one="ACATAGCATAAAT";
+		string two="ACATACATAAATG";
+
+		string a="ACATACATGAAATG";
+		string b="ACATACATAGGAAT";
+		string c="ACATACATAAAGGT";
+
+		vector <string> num(2);
+		num[0]=one;
+		num[1]=two;
+
+		vector <string> letter(3);
+		letter[0]=a;
+		letter[1]=b;
+		letter[2]=c;
+
+		vector <double> w1(2);
+		vector <double> w2(3);
+
+		w1[0]=1;
+		w1[1]=1;
+
+		w2[0]=1;
+		w2[1]=1;
+		w2[2]=1;
+		PhyloSupport::AlingMultiSvsMultiS2(num,letter,w1,w2,false);
 	}
 
 

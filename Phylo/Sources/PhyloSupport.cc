@@ -30,6 +30,7 @@
 #include <ScoringS2S.h>
 #include <IoTools.h>
 #include <math.h>
+#include <SeqNodeGraph.h>
 
 // Global constants, typedefs, etc. (to avoid):
 using namespace Victor::Align2;
@@ -461,6 +462,74 @@ namespace Victor { namespace Phylo{
 			cout<<"\t \t \t ---------finish multi Align prima del return----------------"<<endl;
 			return seqFinal;
 	}
+
+
+    vector<string> PhyloSupport::AlingMultiSvsMultiS2(vector <string> seq1,vector <string> seq2,vector <double> vWeigth1,vector <double> vWeigth2,bool verbose){
+    	int tokenSize=5;
+    	cout<<"AlingMultiSvsMultiS2"<<endl;
+ 		while(seq1[0].size()%tokenSize!=0){
+ 			for(unsigned int i=0;i<seq1.size();i++){
+ 				seq1[i]+="-";
+ 			}
+ 		}
+
+ 		while(seq2[0].size()%tokenSize!=0){
+ 			for(unsigned int i=0;i<seq2.size();i++){
+ 				seq2[i]+="-";
+ 			}
+ 		}
+
+    	vector <SeqNodeGraph*> tokenS1(seq1[0].size()/tokenSize);
+    	vector <SeqNodeGraph*> tokenS2(seq2[0].size()/tokenSize);
+
+    	for(unsigned int i=0; i<seq1[0].size()/tokenSize;i++)
+    	{//for all char
+    		vector<string> tempSV(seq1.size());
+    		for(unsigned int j=0; j<seq1.size();j++)
+    		{//for all seq[j]
+    			tempSV[j]=seq1[j].substr(i,tokenSize);
+    		}
+    		/*cout<<"------i "<<i<<endl;
+    		cout<<"------seq1[0].size( )"<<seq1[0].size()<<endl;
+    		cout<<"------i "<<i<<endl;
+       		cout<<"------tempSV.size() "<<tempSV.size()<<endl;
+    		cout<<"------tempSV[0].size() "<<tempSV[0].size()<<endl;
+    		cout<<"------tempSV[0] "<<tempSV[0]<<endl;
+    		cout<<"------seq1[0].size()/tokenSize "<<seq1[0].size()/tokenSize<<endl;*/
+
+    		tokenS1[i]= new SeqNodeGraph(i,i-1+tokenSize,seq1.size(),tempSV,seq2.size());
+
+    		//cout<<"------tokenS1.size() "<<tokenS1.size()<<endl;
+    	}
+
+    	for(unsigned int i=0; i<seq2[0].size()/tokenSize;i++)
+    	{
+    		vector<string> tempSV(seq2.size());
+    		for(unsigned int j=0; j<seq2.size();j++)
+    		{
+    			tempSV[j]=seq2[j].substr(i,tokenSize);
+    		}
+    		cout<<"------i "<<i<<endl;
+    		cout<<"------seq2[i].size( )"<<seq2[i].size()<<endl;
+    		cout<<"------tempSV.size() "<<tempSV.size()<<endl;
+    		cout<<"------tempSV[0].size() "<<tempSV[0].size()<<endl;
+    		cout<<"------tempSV[0] "<<tempSV[0]<<endl;
+    		cout<<"------seq2[0].size()/tokenSize "<<seq2[0].size()/tokenSize<<endl;
+    		tokenS2[i]= new SeqNodeGraph(i,i-1+tokenSize,seq2.size(),tempSV,seq1.size());
+    	}
+
+    	for(unsigned int i=0; i<tokenS1.size();i++){
+    		cout<<"dentro for di setnode "<<tokenS1.size()<<endl;
+    		cout<<i<<" la media prima"<<tokenS1[i]->getAverageTax()<<endl;
+    		SeqNodeGraph::setNode(tokenS1[i],tokenS2);
+    		cout<<" la media dopo"<<endl;
+    		//cout<<" la media dopo"<<tokenS1[i].getAverageTax()<<endl;
+
+		}
+
+
+    	return seq1;
+    }
 
 
 

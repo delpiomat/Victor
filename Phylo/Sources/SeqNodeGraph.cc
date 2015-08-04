@@ -1,0 +1,188 @@
+/*  This file is part of Victor.
+
+    Victor is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Victor is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Victor.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+// Includes:
+#include <SubMatrix.h>
+#include <Alignment.h>
+#include <AlignmentData.h>
+#include <SequenceData.h>
+#include <NWAlign.h>
+#include <AGPFunction.h>
+#include <ScoringS2S.h>
+
+#include <NewickTree.h>
+#include <PhyloSupport.h>
+#include <SeqNodeGraph.h>
+
+#include <sstream>
+#include <string>
+#include <vector>
+
+// Global constants, typedefs, etc. (to avoid):
+using namespace Victor::Align2;
+using namespace Victor;
+using namespace std;
+
+namespace Victor { namespace Phylo{
+
+	// CONSTRUCTORS:
+
+
+	SeqNodeGraph::SeqNodeGraph(){
+		indexStart=0;
+		indexFinish=0;
+		totNumSeq=0;
+		vector <double> taxV(0);
+		taxEdge=taxV;
+		tokenSize=0;
+		numSeq=0;
+		averageTax=0;
+		numTokenInSeq2=0;
+	}
+
+
+	//totNumSeq how much of seq in this node minimun 1
+	//how much seq in the seq2 important for size of vector TaxEge;
+	//Weigth depends on guide tree;
+	SeqNodeGraph::SeqNodeGraph(unsigned int indexS,unsigned int indexF, unsigned int totNumS,vector <string> tokenS,unsigned int numSeqInS2){
+		indexStart=indexS;
+		indexFinish=indexF;
+		totNumSeq=totNumS;
+		vector <double> taxV(totNumSeq);
+		taxEdge=taxV;
+		tokenSeq=tokenS;
+		tokenSize=tokenSeq[0].size();
+		numSeq=tokenSeq.size();
+		averageTax=0;
+		numTokenInSeq2=numSeqInS2;
+	}
+
+
+	/**
+	 *@Description Basic destructor
+	 */
+	SeqNodeGraph::~SeqNodeGraph() {
+		//destroy_tree();//to do
+	}
+
+	// PREDICATES:
+    int SeqNodeGraph::getIndexStart(){
+    	return indexStart;
+    }
+    int SeqNodeGraph::getIndexFinish(){
+    	return indexFinish;
+    }
+    unsigned int SeqNodeGraph::getTotNumSeq(){
+    	return totNumSeq;
+    }
+    double SeqNodeGraph::getTaxEdgeInPosition(unsigned int i){
+    	return taxEdge[i];
+    }
+    char SeqNodeGraph::getCharOfTokenSeq(unsigned int seqNum, unsigned int pos){
+    	return tokenSeq[seqNum][pos];
+    }
+    unsigned int SeqNodeGraph::getTokenSize(){
+    	return tokenSize;
+    }
+    double SeqNodeGraph::getAverageTax(){
+    	return averageTax;
+    }
+
+
+
+
+    // OPERATORS:
+    void SeqNodeGraph::setIndexStart(unsigned int i){
+    	indexStart=i;
+    }
+    void SeqNodeGraph::setIndexFinish(unsigned int i){
+    	indexFinish=i;
+    }
+    void SeqNodeGraph::setTotNumSeq(int i){
+    	numSeq=i;
+    }
+    void SeqNodeGraph::setTaxEdgeInPosition(unsigned int i, double tax){
+    	taxEdge[i]=tax;
+    }
+    void SeqNodeGraph::setTokenSize(int size){
+    	tokenSize=size;
+    }
+
+
+    void SeqNodeGraph::calculateAverageTax(){
+    	cout<<"average"<<endl;
+    	averageTax=0;
+    	for(unsigned int i=0;i<taxEdge.size();i++){
+    		averageTax+=taxEdge[i];
+    }
+    	averageTax=averageTax/taxEdge.size();
+    	cout<<"end averange "<<averageTax<<endl;
+    }
+
+    void SeqNodeGraph::setNode(SeqNodeGraph* node, vector <SeqNodeGraph*> vNode){
+
+    	cout<<"dentro set node-----------------"<<endl;
+
+    	//matrix config
+    	string path = getenv("VICTOR_ROOT");
+		if (path.length() < 3)
+			cout << "Warning: environment variable VICTOR_ROOT is not set." << endl;
+
+		string dataPath = path + "data/";
+
+		//Default matrix
+		string matrixFileName="blosum62.dat";
+		matrixFileName = dataPath + matrixFileName;
+		ifstream matrixFile(matrixFileName.c_str());
+		if (!matrixFile)
+			ERROR("Error opening substitution matrix file.", exception);
+		SubMatrix sub(matrixFile);
+		//end matrix config
+
+    	for(unsigned int i=0; i<vNode.size( );i++)
+    	{//how much long vNode, how many node[i] in vNode
+    		cout<<"for1 i"<<i<<"v node size"<<vNode.size( )<<endl;
+    		for(unsigned int j=0; j<vNode[i]->getTotNumSeq() ;j++)
+			{//how seq in  node[i] of vNode
+    			cout<<"for2 j"<<j<<"v node gettot numseq"<<vNode[i]->getTotNumSeq()<<endl;
+    			for(unsigned int x=0; x<vNode[i]->getTokenSize();x++)
+    			{//for all char in one string in node[i] of vNode
+    				cout<<"for3"<<endl;
+    				for(unsigned int y=0; y<node->getTotNumSeq();y++)
+    				{//for all token of string in node
+    					cout<<"for4"<<endl;
+    					for(unsigned int w=0; w<node->getTotNumSeq();w++)
+    					{//for all char in each seq of node
+    						cout<<"for5"<<endl;
+    						node->setTaxEdgeInPosition(i,sub.score[node->getCharOfTokenSeq(y,w)][vNode[i]->getCharOfTokenSeq(j,x)]);
+    						cout<<"\t lo score in posizione i "<<node->getTaxEdgeInPosition(i)<<endl;
+    					}//end for
+
+    				}//end for
+    			}//end for
+    		}//end for
+    	}//end final for
+    	cout<<"end of all FOR"<<endl;
+
+    	node->calculateAverageTax();
+    	cout<<"near return"<<endl;
+    }
+
+
+
+
+}} // namespace
