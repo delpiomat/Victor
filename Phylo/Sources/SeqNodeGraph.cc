@@ -83,6 +83,7 @@ namespace Victor { namespace Phylo{
 	unsigned int SeqNodeGraph::returnBestEdge(){
 		unsigned int best=0;
 		for(unsigned int i=0; i<taxEdge.size();i++){
+			cout<<"calcolo con zero e i= "<<i<<" tax= "<<taxEdge[i]<<endl;
 			if(taxEdge[best]<taxEdge[i]){
 				best=i;
 			}
@@ -92,14 +93,21 @@ namespace Victor { namespace Phylo{
 
 
 	int SeqNodeGraph::returnBestEdgeAfterIndex(unsigned index){
-		unsigned int best=index+1;
-		for(unsigned int i=index+1; i<taxEdge.size();i++){
-			if(taxEdge[best]<taxEdge[i]){
-				best=i;
+		unsigned int best=index;
+		if(best!=0){
+			best=index+1;
+			for(unsigned int i=index+1; i<taxEdge.size();i++){
+				if(taxEdge[best]<taxEdge[i]){
+					best=i;
+				}
 			}
+			if(best>=taxEdge.size())
+				best=-1;
 		}
-		if(best>=taxEdge.size())
-			best=-1;
+		else{
+			best=returnBestEdge();
+			cout<<endl<<"best value in zero------------>"<<best<<endl;
+		}
 		return best;
 	}
 
@@ -188,10 +196,15 @@ namespace Victor { namespace Phylo{
     			{//for all char in one string in node[i] of vNode
     				for(unsigned int y=0; y<node->getTotNumSeq();y++)
     				{//for all token of string in node
+    					if(i==0)
+    						cout<<"clacolo Score---------"<<endl;
     					for(unsigned int w=0; w<node->getTotNumSeq();w++)
     					{//for all char in each seq of node
     						node->setTaxEdgeInPosition(i,sub.score[node->getCharOfTokenSeq(y,w)][vNode[i]->getCharOfTokenSeq(j,x)]);
-    						//cout<<"\t lo score in posizione i "<<node->getTaxEdgeInPosition(i)<<endl;
+    						if(i==0){
+    							cout<<" "<<node->getCharOfTokenSeq(y,w)<<" & "<<vNode[i]->getCharOfTokenSeq(j,x)<<endl;
+    							cout<<"\t lo score in posizione i= "<<i<<" vale "<<node->getTaxEdgeInPosition(i)<<endl;
+    						}
     					}//end for
 
     				}//end for

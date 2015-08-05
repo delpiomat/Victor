@@ -465,9 +465,14 @@ namespace Victor { namespace Phylo{
 
 
     vector<string> PhyloSupport::AlingMultiSvsMultiS2(vector <string> seq1,vector <string> seq2,vector <double> vWeigth1,vector <double> vWeigth2,bool verbose){
-    	int tokenSize=3	;
+    	int tokenSize=4	;
     	string gap="-";
     	string tokenSizeGap="";
+
+
+
+
+
     	for(unsigned int i=0;i<tokenSize;i++){
     		tokenSizeGap+=gap;
     	}
@@ -493,7 +498,7 @@ namespace Victor { namespace Phylo{
     		vector<string> tempSV(seq1.size());
     		for(unsigned int j=0; j<seq1.size();j++)
     		{//for all seq[j]
-    			tempSV[j]=seq1[j].substr(i,tokenSize);
+    			tempSV[j]=seq1[j].substr(i*tokenSize,tokenSize);
     		}
 
     		tokenS1[i]= new SeqNodeGraph(i,i-1+tokenSize,seq1.size(),tempSV,seq2[0].size()/tokenSize);
@@ -508,7 +513,7 @@ namespace Victor { namespace Phylo{
     		vector<string> tempSV(seq2.size());
     		for(unsigned int j=0; j<seq2.size();j++)
     		{
-    			tempSV[j]=seq2[j].substr(i,tokenSize);
+    			tempSV[j]=seq2[j].substr(i*tokenSize,tokenSize);
     		}
 ;
     		tokenS2[i]= new SeqNodeGraph(i,i-1+tokenSize,seq2.size(),tempSV,seq1[0].size()/tokenSize);
@@ -521,9 +526,8 @@ namespace Victor { namespace Phylo{
     		SeqNodeGraph::setNode(tokenS1[i],tokenS2);
 		}
 
-    	vector <int> edgeFor2(tokenS2.size(),-1);
-    	vector <int> edgeFor1(tokenS1.size(),-1);
-    	vector <string> finalS(seq1.size()+seq2.size());
+    	vector <int> edgeFor1(tokenS1.size()+tokenS2.size(),-1);
+    	vector <string> finalS(seq1.size()+seq2.size(),"");
     	unsigned int count1=0;
     	unsigned int count2=0;
     	while(count1<tokenS1.size() && count2<tokenS2.size()){
@@ -538,24 +542,37 @@ namespace Victor { namespace Phylo{
     		cout<<edgeFor1[i]<<" ";
     	}
     	cout<<endl;
-    	for(unsigned int i=0; i<edgeFor2.size();i++){
-    		cout<<edgeFor2[i]<<" ";
+
+
+    	unsigned int countGap=0;
+    	for(unsigned int i=0; i<tokenS1.size();i++){
+			if(edgeFor1[i]!=-1 ){
+				countGap=edgeFor1[i];
+				for(unsigned x=0;x<seq1.size();x++){
+					if(i==0){
+						for(unsigned int j=0; j<countGap;j++){
+							finalS[x]+=tokenSizeGap;
+						}//end for j
+						finalS[x]+=tokenS1[i]->getTokenSeq(x);
+					}//if
+					else{
+						for(unsigned int j=0; j<countGap-edgeFor1[i-1];j++){
+							finalS[x]+=tokenSizeGap;
+						}
+						finalS[x]+=tokenS1[i]->getTokenSeq(x);
+					}
+				}//end for x
+			}//end if
+			else{
+				for(unsigned x=0;x<seq1.size();x++){
+					finalS[x]+=tokenS1[i]->getTokenSeq(x);
+				}
+			}
+    	}//ed for i
+
+    	for(unsigned int i=0; i<seq2.size();i++){
+    		finalS[i+seq1.size()]+=seq2[i];
     	}
-    	cout<<endl;
-
-    	for(unsigned int i=0; i<edgeFor1[0];i++){
-    		for(unsigned int j=0; j<seq1.size();j++){
-    			finalS[j]="";
-    			finalS[j]+=tokenSizeGap;
-    		}
-    	}
-
-    	for(unsigned int i=0; i<seq1.size();i++){
-    		finalS[i]+=seq1[i];
-    	}
-    	for(unsigned int i=0; i<seq1.size();i++){
-
-
 
     	cout<<"la seq alla fine"<<endl;
     	for(unsigned int i=0; i<finalS.size();i++){
