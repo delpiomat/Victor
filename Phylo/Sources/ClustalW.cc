@@ -149,6 +149,7 @@ namespace Victor { namespace Phylo{
 		}
 
 
+
 		cout<<"\t nodeTree.size() = "<<nodeTree.size()<<endl;
 		cout<<"size di [0] "<<nodeTree[0]->allignSeq.size()<<endl;
 		cout<<"seq di [0] "<<endl<<nodeTree[0]->allignSeq[0]<<endl<<endl;
