@@ -83,7 +83,7 @@ namespace Victor { namespace Phylo{
 	unsigned int SeqNodeGraph::returnBestEdge(){
 		unsigned int best=0;
 		for(unsigned int i=0; i<taxEdge.size();i++){
-			cout<<"calcolo con zero e i= "<<i<<" tax= "<<taxEdge[i]<<endl;
+			//cout<<"calcolo con zero e i= "<<i<<" tax= "<<taxEdge[i]<<endl;
 			if(taxEdge[best]<taxEdge[i]){
 				best=i;
 			}
@@ -93,21 +93,16 @@ namespace Victor { namespace Phylo{
 
 
 	int SeqNodeGraph::returnBestEdgeAfterIndex(unsigned index){
-		unsigned int best=index;
-		if(best!=0){
-			best=index+1;
-			for(unsigned int i=index+1; i<taxEdge.size();i++){
-				if(taxEdge[best]<taxEdge[i]){
-					best=i;
-				}
+		unsigned int best=index+1;
+		best=index+1;
+		for(unsigned int i=index+1; i<taxEdge.size();i++){
+			if(taxEdge[best]<taxEdge[i]){
+				//cout<<"taxEdge[best]<taxEdge[i] "<<taxEdge[best]<<" < "<<taxEdge[i]<<endl;
+				best=i;
 			}
-			if(best>=taxEdge.size())
-				best=-1;
 		}
-		else{
-			best=returnBestEdge();
-			cout<<endl<<"best value in zero------------>"<<best<<endl;
-		}
+		if(best>=taxEdge.size())
+			best=-1;
 		return best;
 	}
 
@@ -159,18 +154,18 @@ namespace Victor { namespace Phylo{
 
 
     void SeqNodeGraph::calculateAverageTax(){
-    	cout<<"average"<<endl;
+    	//cout<<"average"<<endl;
     	averageTax=0;
     	for(unsigned int i=0;i<taxEdge.size();i++){
     		averageTax+=taxEdge[i];
     }
     	averageTax=averageTax/taxEdge.size();
-    	cout<<"end averange "<<averageTax<<endl;
+    	//cout<<"end averange "<<averageTax<<endl;
     }
 
     void SeqNodeGraph::setNode(SeqNodeGraph* node, vector <SeqNodeGraph*> vNode){
 
-    	cout<<"dentro set node-----------------"<<endl;
+    	//cout<<"dentro set node-----------------"<<endl;
 
     	//matrix config
     	string path = getenv("VICTOR_ROOT");
@@ -197,13 +192,13 @@ namespace Victor { namespace Phylo{
     				for(unsigned int y=0; y<node->getTotNumSeq();y++)
     				{//for all token of string in node
     					if(i==0)
-    						cout<<"clacolo Score---------"<<endl;
-    					for(unsigned int w=0; w<node->getTotNumSeq();w++)
+    						//cout<<"clacolo Score---------"<<endl;
+    					for(unsigned int w=0; w<node->getTokenSize();w++)
     					{//for all char in each seq of node
     						node->setTaxEdgeInPosition(i,sub.score[node->getCharOfTokenSeq(y,w)][vNode[i]->getCharOfTokenSeq(j,x)]);
     						if(i==0){
-    							cout<<" "<<node->getCharOfTokenSeq(y,w)<<" & "<<vNode[i]->getCharOfTokenSeq(j,x)<<endl;
-    							cout<<"\t lo score in posizione i= "<<i<<" vale "<<node->getTaxEdgeInPosition(i)<<endl;
+    							//cout<<" "<<node->getCharOfTokenSeq(y,w)<<" & "<<vNode[i]->getCharOfTokenSeq(j,x)<<endl;
+    							//cout<<"\t lo score in posizione i= "<<i<<" vale "<<node->getTaxEdgeInPosition(i)<<endl;
     						}
     					}//end for
 
@@ -211,10 +206,10 @@ namespace Victor { namespace Phylo{
     			}//end for
     		}//end for
     	}//end final for
-    	cout<<"end of all FOR"<<endl;
+    	//cout<<"end of all FOR"<<endl;
 
     	node->calculateAverageTax();
-    	cout<<"near return"<<endl;
+    	//cout<<"near return"<<endl;
     }
 
 

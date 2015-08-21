@@ -61,7 +61,7 @@ namespace Victor { namespace Phylo {
         //old
         static vector<string> AlingMultiSvsMultiS(vector <string> seq1,vector <string> seq2,vector <double> vWeigth1,vector <double> vWeigth2,bool verbose=false);
         //new
-        static vector<string> AlingMultiSvsMultiS2(vector <string> seq1,vector <string> seq2,vector <double> vWeigth1,vector <double> vWeigth2,bool verbose=false);
+        static vector<string> AlingMultiSvsMultiS2(vector <string> seq1,vector <string> seq2,vector <double> vWeigth1,vector <double> vWeigth2,bool verbose=false,int tokenSize=1);
         static string insertGapPosition(string seq, int position);
         static string intToString( int num );
 

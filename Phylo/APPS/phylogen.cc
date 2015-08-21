@@ -144,6 +144,7 @@ int main(int argc, char **argv) {
 		string dataPath = path + "data/";
 		string finalPath=dataPath+inputFileName;
 
+		cout<<"path "<<finalPath<<endl;
 		ifstream secFile(finalPath.c_str());
 				if (!secFile)
 					ERROR("Error opening secondary structure FASTA file.", exception);
