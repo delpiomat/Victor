@@ -160,12 +160,12 @@ namespace Victor { namespace Phylo{
 
 		cout<<"endl clustaW"<<endl;*/
 
-		/*string o="TDVIYQIVTDRFADGDRTNNPAGDAFSGDRSNLKLYFGGDWQGIID";
-		string t="TDVIYQIVTDRFSDGNPGNNPSGAIFSQNCIDLHKYCGGDWQGIID";
+		string o="TDVIYQIVTDRFADGDRTNNPAGDAFSGDRSNLKLYFGGDWQGIID";
+		string t="TDVIYQIVTDRFADGDRTNNPAGDAFSGDRSNLKLYFGGDWQGIID";
 
-		string a="DYFINTDYQVIYQIFTDRFSDGNPANNPTVIYQIVTDRFYQVIYQVTDVIYQIVTDRFADGDRTNNPAGDAFSGDRSNLKLYFGGDWQGIID";
-		string b="QWYQVIYQIFTDRFSDGNPANNPTYPTHTSLKKYFGGDWQNNPTGDTDVIYQIVTDRFADGDRTNNPAGDAFSGDRSNLKLYFGGDWQGIID";
-		string c="PYRVYQIVTDRFVDGNSANNPTGAAFSSDHSNLKLYFGGDWQGITNTDVIYQIVTDRFADGDRTNNPAGDAFSGDRSNLKLYFGGDWQGIID";*/
+		string a="NPANNPTVIYQIVTDRFYQVIYQVTDVIYQIVTDRFADGDRTNNPAGDAFSGDRSNLDDDDKLYFGGDWQGIID";
+		string b="PTYPTHTSLKKYFGGDWQNNPTGDTDVIYQIVTDRFADGDRTNNPAGDAFSGDRSNLDDDDKLYFGGDWQGIID";
+		string c="GAAFSSDHSNLKLYFGGDWQGITNTDVIYQIVTDRFADGDRTNNPAGDAFSGDRSNLDDDDKLYFGGDWQGIID";
 
 		/*string o="TDVIYQIVTDRFADGDRTNNPA";
 		string t="NPVIYQIVTDRFSDGNPGNNPS";
@@ -181,12 +181,12 @@ namespace Victor { namespace Phylo{
 		string b="ACACACTGGCACACACACACAAAA";
 		string c="ACACACTGGCACACACACACACAA";*/
 
-		string o="AAAAAAAAAACCCCCCCCCCCCCC";
-		string t="AAAAAAAAAACCCCCCCCCCCCCC";
+		/*string o="AC";
+		string t="AC";
 
-		string a="ACGGGGGGCACACACACACCCCCAAAAAAAAAACCCCCCCCCCCCCC";
-		string b="TACACTGGCACACACACACAAAAAAAAAAAAAACCCCCCCCCCCCCC";
-		string c="ACGGGGGGCACACACACACACAAAAAAAAAAAACCCCCCCCCCCCCC";
+		string a="YQVIYQIFTACFSDGNPANNPT";
+		string b="TDVIYQIVTACFADGDRTNNPA";
+		string c="NPVIYQIVTACFSDGNPGNNPS";*/
 
 		vector <string> num(2);
 		num[0]=o;
@@ -206,13 +206,10 @@ namespace Victor { namespace Phylo{
 		w2[0]=1;
 		w2[1]=1;
 		w2[2]=1;
-		PhyloSupport::AlingMultiSvsMultiS2(num,letter,w1,w2,false,1);
-		PhyloSupport::AlingMultiSvsMultiS2(num,letter,w1,w2,false,2);
-		PhyloSupport::AlingMultiSvsMultiS2(num,letter,w1,w2,false,3);
-		PhyloSupport::AlingMultiSvsMultiS2(num,letter,w1,w2,false,4);
-		PhyloSupport::AlingMultiSvsMultiS2(num,letter,w1,w2,false,5);
-		PhyloSupport::AlingMultiSvsMultiS2(num,letter,w1,w2,false,6);
-		PhyloSupport::AlingMultiSvsMultiS2(num,letter,w1,w2,false,num[0].size()/2);
+		for(int i=1; i<num[0].size();i++){
+			cout<<"---------------------------------"<<i<<"----------------------------------------------"<<endl;
+			PhyloSupport::AlingMultiSvsMultiS2(num,letter,w1,w2,false,i);
+		}
 	}
 
 

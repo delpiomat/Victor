@@ -66,6 +66,7 @@ namespace Victor { namespace Phylo {
         void setTotNumSeq(int i);
         void setTaxEdgeInPosition(unsigned int i, double tax);
         void setTokenSize(int size);
+        void printTaxEdge();
         void calculateAverageTax();
         static void setNode(SeqNodeGraph* node, vector <SeqNodeGraph*> vNode);
 

@@ -468,13 +468,27 @@ namespace Victor { namespace Phylo{
 
     	string gap="-";
     	string tokenSizeGap="";
+    	string tokenSizeGap2="";
+    	int tokenSize2=tokenSize;
 
-
-
+    	//insert gap at end for string with same size//not need
+    	while(seq1[0].size()>seq2[0].size()){
+        	for(unsigned int i=0; i<seq2.size();i++){
+        		seq2[i]+=gap;
+        	}
+    	}
+    	while(seq1[0].size()<seq2[0].size()){
+        	for(unsigned int i=0; i<seq1.size();i++){
+        		seq1[i]+=gap;
+        	}
+    	}
 
 
     	for(unsigned int i=0;i<tokenSize;i++){
     		tokenSizeGap+=gap;
+    	}
+    	for(unsigned int i=0;i<tokenSize2;i++){
+    		tokenSizeGap2+=gap;
     	}
 
     	cout<<"AlingMultiSvsMultiS2"<<endl;
@@ -484,14 +498,14 @@ namespace Victor { namespace Phylo{
  			}
  		}
 
- 		while(seq2[0].size()%tokenSize!=0){
+ 		while(seq2[0].size()%tokenSize2!=0){
  			for(unsigned int i=0;i<seq2.size();i++){
  				seq2[i]+="-";
  			}
  		}
 
     	vector <SeqNodeGraph*> tokenS1(seq1[0].size()/tokenSize);
-    	vector <SeqNodeGraph*> tokenS2(seq2[0].size()/tokenSize);
+    	vector <SeqNodeGraph*> tokenS2(seq2[0].size()/tokenSize2);
 
     	for(unsigned int i=0; i<seq1[0].size()/tokenSize;i++)
     	{//for all char
@@ -508,15 +522,15 @@ namespace Victor { namespace Phylo{
     	cout<<"dimensione delle sequezne seq1[0].size()="<<seq1[0].size()<<" seq2[0].size() "<<seq2[0].size()<<endl;
 
 
-    	for(unsigned int i=0; i<seq2[0].size()/tokenSize;i++)
+    	for(unsigned int i=0; i<seq2[0].size()/tokenSize2;i++)
     	{
     		vector<string> tempSV(seq2.size());
     		for(unsigned int j=0; j<seq2.size();j++)
     		{
-    			tempSV[j]=seq2[j].substr(i*tokenSize,tokenSize);
+    			tempSV[j]=seq2[j].substr(i*tokenSize2,tokenSize2);
     		}
 
-    		tokenS2[i]= new SeqNodeGraph(i,i-1+tokenSize,seq2.size(),tempSV,seq1[0].size()/tokenSize);
+    		tokenS2[i]= new SeqNodeGraph(i,i-1+tokenSize2,seq2.size(),tempSV,seq1[0].size()/tokenSize2);
     	}
 
 
@@ -525,6 +539,18 @@ namespace Victor { namespace Phylo{
     		//cout<<"i "<<i<<" token size totale="<<tokenS1.size()<<endl;
     		SeqNodeGraph::setNode(tokenS1[i],tokenS2);
 		}
+
+    	tokenS1[0]->printTaxEdge();
+    	tokenS1[1]->printTaxEdge();
+
+    	cout<<"tokenS1.size()="<<tokenS1.size()<<endl;
+    	for(int i=0;i<tokenS1.size();i++){
+    		cout<<"token "<<i<<endl;
+    		for(int j=0;j<tokenS2.size();j++){
+    			cout<<" j"<<j<<"="<<tokenS1[i]->getTaxEdgeInPosition(j)<<"";
+    		}
+    		cout<<endl;
+    	}
 
     	vector <int> edgeFor1(tokenS1.size()+tokenS2.size(),-1);
     	vector <string> finalS(seq1.size()+seq2.size(),"");
@@ -545,9 +571,9 @@ namespace Victor { namespace Phylo{
 
     	}
 
-    	//cout<<"print best edge"<<endl;
+    	cout<<"print best edge"<<endl;
     	for(unsigned int i=0; i<edgeFor1.size();i++){
-    		//cout<<edgeFor1[i]<<" ";
+    		cout<<edgeFor1[i]<<" ";
     	}
     	cout<<endl;
 
@@ -557,13 +583,13 @@ namespace Victor { namespace Phylo{
 				for(unsigned x=0;x<seq1.size();x++){
 					if(i==0){
 						for(unsigned int j=0; j<edgeFor1[i];j++){
-							finalS[x]+=tokenSizeGap;
+							finalS[x]+=tokenSizeGap2;
 						}//end for j
 						finalS[x]+=tokenS1[i]->getTokenSeq(x);
 					}//if
 					else{
 						for(unsigned int j=0; j<edgeFor1[i]-edgeFor1[i-1]-1;j++){
-							finalS[x]+=tokenSizeGap;
+							finalS[x]+=tokenSizeGap2;
 						}
 						finalS[x]+=tokenS1[i]->getTokenSeq(x);
 					}
@@ -590,6 +616,18 @@ namespace Victor { namespace Phylo{
         	for(unsigned int i=0; i<seq1.size();i++){
         		finalS[i]+=gap;
         	}
+    	}
+
+    	//delete useless gap
+    	bool uselessGap=true;
+    	while(uselessGap){
+    		uselessGap=true;
+    		for(unsigned int i=1; i<finalS.size();i++)
+    		{
+    			if(finalS[i][finalS[i].size()-1]!=finalS[i-1][finalS[i-1].size()-1]){
+    				uselessGap=false;
+    			}
+    		}
     	}
 
     	cout<<"la seq alla fine"<<endl;
