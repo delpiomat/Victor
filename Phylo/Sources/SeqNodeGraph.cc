@@ -83,7 +83,7 @@ namespace Victor { namespace Phylo{
 	unsigned int SeqNodeGraph::returnBestEdge(){
 		unsigned int best=0;
 		for(unsigned int i=0; i<taxEdge.size();i++){
-			cout<<"taxEdge[best]<taxEdge["<<i<<"] "<<"best="<<best<<" "<<taxEdge[best]<<" < "<<taxEdge[i]<<" "<<(taxEdge[best]<taxEdge[i])<<endl;
+			//cout<<"taxEdge[best]<taxEdge["<<i<<"] "<<"best="<<best<<" "<<taxEdge[best]<<" < "<<taxEdge[i]<<" "<<(taxEdge[best]<taxEdge[i])<<endl;
 			//cout<<"calcolo con zero e i= "<<i<<" tax= "<<taxEdge[i]<<endl;
 			if(taxEdge[best]<taxEdge[i]){
 				best=i;

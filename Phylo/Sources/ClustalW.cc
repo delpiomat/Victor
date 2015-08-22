@@ -62,9 +62,10 @@ namespace Victor { namespace Phylo{
 
 	void ClustalW::progressiveAlign(){
 
-		/*cout<<" Progressive alignament Start "<<endl;
+		cout<<" Progressive alignament Start "<<endl;
 		vector<string> tmpV(2);
 		vector<double> tmpWeigth(2);
+		int tokenSize=60;
 
 		cout<<"leaf number "<<guideTree.getNumberOfLeaf()<<endl;
 
@@ -75,15 +76,18 @@ namespace Victor { namespace Phylo{
 
 		vector <string> seqV(1);
 		vector <double> weigthV(1);
-		for(unsigned int j=1;j<guideTree.getNumberOfLeaf()+1;j++){
+		for(unsigned int j=1;j<guideTree.getNumberOfLeaf();j++){
 			cout<<"\t --------- NEW START ---------------"<<j<<endl;
 
 			for(unsigned int i=0;i<nodeTree.size();i++){
-				cout<<"\t --------- i= "<<i<<" j= ---------------"<<j<<endl;
+				//cout<<"\t --------- i= "<<i<<" j= ---------------"<<j<<endl;
 
 				if(j==guideTree.getNumberOfLeaf() && i==0)
 				{
-					tmpV=PhyloSupport::AlingMultiSvsMultiS(nodeTree[0]->allignSeq,nodeTree[1]->allignSeq,nodeTree[0]->weigthV,nodeTree[1]->weigthV);
+					if(nodeTree[0]->allignSeq[0].size()<nodeTree[1]->allignSeq[0].size())
+						tmpV=PhyloSupport::AlingMultiSvsMultiS2(nodeTree[0]->allignSeq,nodeTree[1]->allignSeq,nodeTree[0]->weigthV,nodeTree[1]->weigthV,false,tokenSize);
+					else
+						tmpV=PhyloSupport::AlingMultiSvsMultiS2(nodeTree[1]->allignSeq,nodeTree[0]->allignSeq,nodeTree[1]->weigthV,nodeTree[0]->weigthV,false,tokenSize);
 					nodeTree[1]->ClustalW=true;
 					nodeTree[0]->allignSeq=tmpV;
 				}
@@ -113,7 +117,10 @@ namespace Victor { namespace Phylo{
 				else if(j>2 && nodeTree[i]->parent->numberOfChildLeaf==j && !nodeTree[i]->ClustalW){
 
 					if(nodeTree[i]->isLeft){
-						tmpV=PhyloSupport::AlingMultiSvsMultiS(nodeTree[i]->allignSeq,nodeTree[i]->parent->right->allignSeq,nodeTree[i]->weigthV,nodeTree[i]->parent->right->weigthV);
+						if(nodeTree[i]->allignSeq[0].size()<nodeTree[i]->parent->right->allignSeq[0].size())
+							tmpV=PhyloSupport::AlingMultiSvsMultiS2(nodeTree[i]->allignSeq,nodeTree[i]->parent->right->allignSeq,nodeTree[i]->weigthV,nodeTree[i]->parent->right->weigthV,false,tokenSize);
+						else
+							tmpV=PhyloSupport::AlingMultiSvsMultiS2(nodeTree[i]->parent->right->allignSeq,nodeTree[i]->allignSeq,nodeTree[i]->parent->right->weigthV,nodeTree[i]->weigthV,false,tokenSize);
 						nodeTree[i]->parent->right->ClustalW=true;
 						vector <double> weigthTMP(nodeTree[i]->weigthV.size()+nodeTree[i]->parent->right->weigthV.size());
 						for(unsigned int y=0;y<nodeTree[i]->weigthV.size();y++){
@@ -125,7 +132,10 @@ namespace Victor { namespace Phylo{
 						nodeTree[i]->parent->weigthV=weigthTMP;
 					}
 					else{//is right child
-						tmpV=PhyloSupport::AlingMultiSvsMultiS(nodeTree[i]->allignSeq,nodeTree[i]->parent->left->allignSeq,nodeTree[i]->weigthV,nodeTree[i]->parent->right->weigthV);
+						if(nodeTree[i]->allignSeq[0].size()<nodeTree[i]->parent->left->allignSeq[0].size())
+							tmpV=PhyloSupport::AlingMultiSvsMultiS2(nodeTree[i]->allignSeq,nodeTree[i]->parent->left->allignSeq,nodeTree[i]->weigthV,nodeTree[i]->parent->right->weigthV,false,tokenSize);
+						else
+							tmpV=PhyloSupport::AlingMultiSvsMultiS2(nodeTree[i]->parent->left->allignSeq,nodeTree[i]->allignSeq,nodeTree[i]->parent->right->weigthV,nodeTree[i]->weigthV,false,tokenSize);
 						nodeTree[i]->parent->left->ClustalW=true;
 						vector <double> weigthTMP(nodeTree[i]->weigthV.size()+nodeTree[i]->parent->left->weigthV.size());
 						for(unsigned int y=0;y<nodeTree[i]->weigthV.size();y++){
@@ -158,55 +168,7 @@ namespace Victor { namespace Phylo{
 
 		cout<<endl<<ClustalW::printClustalWFromat(nodeTree[0]->allignSeq)<<endl;
 
-		cout<<"endl clustaW"<<endl;*/
-
-		string o="TDVIYQIVTDRFADGDRTNNPAGDAFSGDRSNLKLYFGGDWQGIID";
-		string t="TDVIYQIVTDRFADGDRTNNPAGDAFSGDRSNLKLYFGGDWQGIID";
-
-		string a="NPANNPTVIYQIVTDRFYQVIYQVTDVIYQIVTDRFADGDRTNNPAGDAFSGDRSNLDDDDKLYFGGDWQGIIDNPANNPTVI";
-		string b="PTYPTHTSLKKYFGGDWQNNPTGDTDVIYQIVTDRFADGDRTNNPAGDAFSGDRSNLDDDDKLYFGGDWQGIIDNPANNPTVI";
-		string c="GAAFSSDHSNLKLYFGGDWQGITNTDVIYQIVTDRFADGDRTNNPAGDAFSGDRSNLDDDDKLYFGGDWQGIIDNPANNPTVI";
-
-		/*string o="TDVIYQIVTDRFADGDRTNNPA";
-		string t="NPVIYQIVTDRFSDGNPGNNPS";
-
-		string a="YQVIYQIFTDRFSDGNPANNPT";
-		string b="VIVIYQIVTDRFVDGNTSNNPT";
-		string c="RFTVYQIVTDRFVDGNSANNPT";*/
-
-		/*string o="ACACACACGCACAAAAACACACCC";
-		string t="ACACACACGCACAAAAACACACCC";
-
-		string a="ACACACTGGCACACACACACAAAA";
-		string b="ACACACTGGCACACACACACAAAA";
-		string c="ACACACTGGCACACACACACACAA";*/
-
-		/*string o="AC";
-		string t="AC";
-
-		string a="YQVIYQIFTACFSDGNPANNPT";
-		string b="TDVIYQIVTACFADGDRTNNPA";
-		string c="NPVIYQIVTACFSDGNPGNNPS";*/
-
-		vector <string> num(2);
-		num[0]=o;
-		num[1]=t;
-
-		vector <string> letter(3);
-		letter[0]=a;
-		letter[1]=b;
-		letter[2]=c;
-
-		vector <double> w1(2);
-		vector <double> w2(3);
-
-		w1[0]=1;
-		w1[1]=1;
-
-		w2[0]=1;
-		w2[1]=1;
-		w2[2]=1;
-		PhyloSupport::AlingMultiSvsMultiS2(num,letter,w1,w2,false,1);
+		cout<<"endl clustaW"<<endl;
 
 	}
 
@@ -217,7 +179,7 @@ namespace Victor { namespace Phylo{
 		string tmp="";
 		unsigned int j=0;
 		unsigned int index=0;
-		unsigned int dim=50;
+		unsigned int dim=49;
 		while(j<seq[0].size()){
 			for(unsigned int i=0;i<seq.size();i++){
 			txt+="seq"+PhyloSupport::intToString(i)+" \t \t ";

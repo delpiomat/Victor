@@ -540,17 +540,17 @@ namespace Victor { namespace Phylo{
     		SeqNodeGraph::setNode(tokenS1[i],tokenS2);
 		}
 
-    	tokenS1[0]->printTaxEdge();
-    	tokenS1[1]->printTaxEdge();
+    	//tokenS1[0]->printTaxEdge();
+    	//tokenS1[1]->printTaxEdge();
 
-    	cout<<"tokenS1.size()="<<tokenS1.size()<<endl;
+    	/*cout<<"tokenS1.size()="<<tokenS1.size()<<endl;
     	for(int i=0;i<tokenS1.size();i++){
     		cout<<"token "<<i<<endl;
     		for(int j=0;j<tokenS2.size();j++){
     			cout<<" j"<<j<<"="<<tokenS1[i]->getTaxEdgeInPosition(j)<<"";
     		}
     		cout<<endl;
-    	}
+    	}*/
 
     	vector <int> edgeFor1(tokenS1.size()+tokenS2.size(),-1);
     	vector <string> finalS(seq1.size()+seq2.size(),"");
@@ -571,11 +571,11 @@ namespace Victor { namespace Phylo{
 
     	}
 
-    	cout<<"print best edge"<<endl;
+    	/*cout<<"print best edge"<<endl;
     	for(unsigned int i=0; i<edgeFor1.size();i++){
     		cout<<edgeFor1[i]<<" ";
     	}
-    	cout<<endl;
+    	cout<<endl;*/
 
     	//insert in final vector of string
     	for(unsigned int i=0; i<tokenS1.size();i++){
@@ -637,10 +637,10 @@ namespace Victor { namespace Phylo{
     		}
     	}
 
-    	cout<<"la seq alla fine"<<endl;
+    	/*cout<<"la seq alla fine"<<endl;
     	for(unsigned int i=0; i<finalS.size();i++){
     		cout<<finalS[i]<<endl;
-    	}
+    	}*/
 
 
     	return finalS;
