@@ -624,9 +624,16 @@ namespace Victor { namespace Phylo{
     		uselessGap=true;
     		for(unsigned int i=1; i<finalS.size();i++)
     		{
-    			if(finalS[i][finalS[i].size()-1]!=finalS[i-1][finalS[i-1].size()-1]){
+    			if(finalS[i][finalS[i].size()-1]!=finalS[i-1][finalS[i-1].size()-1] || finalS[i][finalS[i].size()-1]!='-'){
     				uselessGap=false;
     			}
+    		}
+
+    		if(uselessGap){
+				for(unsigned int i=0; i<finalS.size();i++)
+				{
+					finalS[i]=finalS[i].substr(0,finalS[i].size()-1);
+				}
     		}
     	}
 
