@@ -67,7 +67,6 @@ namespace Victor { namespace Phylo{
 		vector<double> tmpWeigth(2);
 		int tokenSize=60;
 
-		cout<<"leaf number "<<guideTree.getNumberOfLeaf()<<endl;
 
 		vector <iNode*> nodeTree(guideTree.getNumberOfLeaf());
 		for(unsigned int i=0;i<guideTree.getNumberOfLeaf();i++){
@@ -77,10 +76,9 @@ namespace Victor { namespace Phylo{
 		vector <string> seqV(1);
 		vector <double> weigthV(1);
 		for(unsigned int j=1;j<guideTree.getNumberOfLeaf();j++){
-			cout<<"\t --------- NEW START ---------------"<<j<<endl;
+			//cout<<"\t --------- NEW START ---------------"<<j<<endl;
 
 			for(unsigned int i=0;i<nodeTree.size();i++){
-				//cout<<"\t --------- i= "<<i<<" j= ---------------"<<j<<endl;
 
 				if(j==guideTree.getNumberOfLeaf() && i==0)
 				{
@@ -100,19 +98,15 @@ namespace Victor { namespace Phylo{
 				else if(j==2 && nodeTree[i]->parent->numberOfChildLeaf==2){
 					tmpV=PhyloSupport::AlingSvsS(nodeTree[i]->seq,nodeTree[i]->seq);
 					weigthV[0]=nodeTree[i]->weigth;
-					cout<<"temporaneo weigthV.size = "<<weigthV.size()<<endl;
 					if(weigthV.size()==1)
 						weigthV.push_back(nodeTree[i+1]->weigth);
 					else
 						weigthV[1]=nodeTree[i+1]->weigth;
-					cout<<"temporaneo weigthV.size =  "<<weigthV.size()<<endl;
-					cout<<"size di node tree prima di erase "<<nodeTree.size()<<endl;
+
 					nodeTree.erase(nodeTree.begin()+i+1);
-					cout<<"size di node tree dopo erase "<<nodeTree.size()<<endl;
 					nodeTree[i]->parent->allignSeq=tmpV;
 					nodeTree[i]->parent->weigthV=weigthV;
 					nodeTree[i]=nodeTree[i]->parent;
-					cout<<"size di node tree dopo cambio padre "<<nodeTree.size()<<endl;
 				}
 				else if(j>2 && nodeTree[i]->parent->numberOfChildLeaf==j && !nodeTree[i]->ClustalW){
 
@@ -150,24 +144,24 @@ namespace Victor { namespace Phylo{
 					nodeTree[i]->allignSeq=tmpV;
 				}
 				else if(nodeTree[i]->ClustalW){
-					cout<<"size di node tree prima di erase dentro un caso gia FATTO "<<nodeTree.size()<<" con i= "<<i<<endl;
 					nodeTree.erase(nodeTree.begin()+i);
-					cout<<"size di node tree dopo erase "<<nodeTree.size()<<endl;
 				}
 
 			}
 		}
 
 
+		string outString=ClustalW::printClustalWFromat(nodeTree[0]->allignSeq);
+		cout<<endl<<outString<<endl;
 
-		cout<<"\t nodeTree.size() = "<<nodeTree.size()<<endl;
-		cout<<"size di [0] "<<nodeTree[0]->allignSeq.size()<<endl;
-		cout<<"seq di [0] "<<endl<<nodeTree[0]->allignSeq[0]<<endl<<endl;
+		//write clustalW
+	    ofstream outFile("out.clustalw");
+	    if(!outFile) {
+	        cout<<"Error During creation File out.clustalw";
+	    }
+	    outFile<<outString<<endl;
 
-		cout<<"la5"<<endl<<nodeTree[0]->allignSeq[5]<<endl;
-
-		cout<<endl<<ClustalW::printClustalWFromat(nodeTree[0]->allignSeq)<<endl;
-
+	    outFile.close();
 		cout<<"endl clustaW"<<endl;
 
 	}
@@ -179,14 +173,15 @@ namespace Victor { namespace Phylo{
 		string tmp="";
 		unsigned int j=0;
 		unsigned int index=0;
-		unsigned int dim=49;
+		unsigned int dim=50;
 		while(j<seq[0].size()){
 			for(unsigned int i=0;i<seq.size();i++){
 			txt+="seq"+PhyloSupport::intToString(i)+" \t \t ";
 				for(j=dim*index;j<=dim+dim*index && j<seq[i].size();j++){
-					txt+=seq[i][j+dim*index];
+					txt+=seq[i][j];
 				}
 			txt+=" "+PhyloSupport::intToString(j);
+			cout<<endl;
 			txt+="\n";
 			}
 		txt+="\n\n";
@@ -197,6 +192,7 @@ namespace Victor { namespace Phylo{
 		return txt;
 
 	}
+
 
 
 }} // namespace
