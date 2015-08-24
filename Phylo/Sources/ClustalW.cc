@@ -65,7 +65,7 @@ namespace Victor { namespace Phylo{
 		cout<<" Progressive alignament Start "<<endl;
 		vector<string> tmpV(2);
 		vector<double> tmpWeigth(2);
-		int tokenSize=60;
+		int tokenSize=PhyloSupport::tokenSize;
 
 
 		vector <iNode*> nodeTree(guideTree.getNumberOfLeaf());
@@ -73,18 +73,26 @@ namespace Victor { namespace Phylo{
 			nodeTree[i]=guideTree.getLeafInPosition(i).getRoot();
 		}
 
+		if(tokenSize<1)
+		{
+			tokenSize=nodeTree[0]->seq.size()/10;
+			cout<<"Use Default token Size "<<tokenSize<<endl;
+		}
+
 		vector <string> seqV(1);
 		vector <double> weigthV(1);
+		cout<<"percent to the end:"<<endl;
 		for(unsigned int j=1;j<guideTree.getNumberOfLeaf();j++){
+			cout<<""<<((j)*100/(guideTree.getNumberOfLeaf())*100)/100<<"%"<<endl;
 
 			for(unsigned int i=0;i<nodeTree.size();i++){
 
 				if(j==guideTree.getNumberOfLeaf() && i==0)
 				{
 					if(nodeTree[0]->allignSeq[0].size()<nodeTree[1]->allignSeq[0].size())
-						tmpV=PhyloSupport::AlingMultiSvsMultiS2(nodeTree[0]->allignSeq,nodeTree[1]->allignSeq,nodeTree[0]->weigthV,nodeTree[1]->weigthV,false,tokenSize);
+						tmpV=PhyloSupport::AlingMultiSvsMultiS(nodeTree[0]->allignSeq,nodeTree[1]->allignSeq,nodeTree[0]->weigthV,nodeTree[1]->weigthV,false,tokenSize);
 					else
-						tmpV=PhyloSupport::AlingMultiSvsMultiS2(nodeTree[1]->allignSeq,nodeTree[0]->allignSeq,nodeTree[1]->weigthV,nodeTree[0]->weigthV,false,tokenSize);
+						tmpV=PhyloSupport::AlingMultiSvsMultiS(nodeTree[1]->allignSeq,nodeTree[0]->allignSeq,nodeTree[1]->weigthV,nodeTree[0]->weigthV,false,tokenSize);
 					nodeTree[1]->ClustalW=true;
 					nodeTree[0]->allignSeq=tmpV;
 				}
@@ -111,9 +119,9 @@ namespace Victor { namespace Phylo{
 
 					if(nodeTree[i]->isLeft){
 						if(nodeTree[i]->allignSeq[0].size()<nodeTree[i]->parent->right->allignSeq[0].size())
-							tmpV=PhyloSupport::AlingMultiSvsMultiS2(nodeTree[i]->allignSeq,nodeTree[i]->parent->right->allignSeq,nodeTree[i]->weigthV,nodeTree[i]->parent->right->weigthV,false,tokenSize);
+							tmpV=PhyloSupport::AlingMultiSvsMultiS(nodeTree[i]->allignSeq,nodeTree[i]->parent->right->allignSeq,nodeTree[i]->weigthV,nodeTree[i]->parent->right->weigthV,false,tokenSize);
 						else
-							tmpV=PhyloSupport::AlingMultiSvsMultiS2(nodeTree[i]->parent->right->allignSeq,nodeTree[i]->allignSeq,nodeTree[i]->parent->right->weigthV,nodeTree[i]->weigthV,false,tokenSize);
+							tmpV=PhyloSupport::AlingMultiSvsMultiS(nodeTree[i]->parent->right->allignSeq,nodeTree[i]->allignSeq,nodeTree[i]->parent->right->weigthV,nodeTree[i]->weigthV,false,tokenSize);
 						nodeTree[i]->parent->right->ClustalW=true;
 						vector <double> weigthTMP(nodeTree[i]->weigthV.size()+nodeTree[i]->parent->right->weigthV.size());
 						for(unsigned int y=0;y<nodeTree[i]->weigthV.size();y++){
@@ -126,9 +134,9 @@ namespace Victor { namespace Phylo{
 					}
 					else{//is right child
 						if(nodeTree[i]->allignSeq[0].size()<nodeTree[i]->parent->left->allignSeq[0].size())
-							tmpV=PhyloSupport::AlingMultiSvsMultiS2(nodeTree[i]->allignSeq,nodeTree[i]->parent->left->allignSeq,nodeTree[i]->weigthV,nodeTree[i]->parent->right->weigthV,false,tokenSize);
+							tmpV=PhyloSupport::AlingMultiSvsMultiS(nodeTree[i]->allignSeq,nodeTree[i]->parent->left->allignSeq,nodeTree[i]->weigthV,nodeTree[i]->parent->right->weigthV,false,tokenSize);
 						else
-							tmpV=PhyloSupport::AlingMultiSvsMultiS2(nodeTree[i]->parent->left->allignSeq,nodeTree[i]->allignSeq,nodeTree[i]->parent->right->weigthV,nodeTree[i]->weigthV,false,tokenSize);
+							tmpV=PhyloSupport::AlingMultiSvsMultiS(nodeTree[i]->parent->left->allignSeq,nodeTree[i]->allignSeq,nodeTree[i]->parent->right->weigthV,nodeTree[i]->weigthV,false,tokenSize);
 						nodeTree[i]->parent->left->ClustalW=true;
 						vector <double> weigthTMP(nodeTree[i]->weigthV.size()+nodeTree[i]->parent->left->weigthV.size());
 						for(unsigned int y=0;y<nodeTree[i]->weigthV.size();y++){
@@ -160,7 +168,11 @@ namespace Victor { namespace Phylo{
 	    }
 	    outFile<<outString<<endl;
 
+	    cout<<"score of ClustalW "<<scoreClustalW(nodeTree[0]->allignSeq)<<" Token Size for Graph in MultiAling Change TokenSize for best align command --t"<<tokenSize<<endl;
+
 	    outFile.close();
+        cout<<"Creation File out.clustalw Complete"<<endl;
+
 		cout<<"endl clustaW"<<endl;
 
 	}
@@ -175,23 +187,33 @@ namespace Victor { namespace Phylo{
 		unsigned int dim=50;
 		while(j<seq[0].size()){
 			for(unsigned int i=0;i<seq.size();i++){
-			txt+="seq"+PhyloSupport::intToString(i)+" \t \t ";
+				txt+="seq"+PhyloSupport::intToString(i)+" \t \t ";
 				for(j=dim*index;j<=dim+dim*index && j<seq[i].size();j++){
 					txt+=seq[i][j];
 				}
-			txt+=" "+PhyloSupport::intToString(j);
-			cout<<endl;
-			txt+="\n";
+				txt+=" "+PhyloSupport::intToString(j);
+				txt+="\n";
 			}
-		txt+="\n\n";
-		index++;
+			txt+="\n\n";
+			index++;
 		}
-
-
 		return txt;
-
 	}
 
+	double ClustalW::scoreClustalW(vector<string> allignSeq){
+		double score=0;
+		double partialScore=0;
+		for(unsigned int j=0;j<allignSeq[0].size();j++){//num of char in one string
+			for(unsigned int i=1; i<allignSeq.size();i++){//num of string in the vector
+				if(allignSeq[i][j]==allignSeq[i-1][j]){
+					partialScore+=1.0/(allignSeq[0].size()*1.0);
+				}
+			}
+			score+=partialScore;
+			partialScore=0;
+		}
+		return score/(allignSeq[0].size()*1.0);
+	}
 
 
 }} // namespace

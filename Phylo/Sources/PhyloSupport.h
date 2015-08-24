@@ -70,6 +70,7 @@ namespace Victor { namespace Phylo {
 		static double cSeq;
 		static double downs, downa, ups, upa;
 		static unsigned int weightingScheme;
+		static int tokenSize;
 
 
     protected:

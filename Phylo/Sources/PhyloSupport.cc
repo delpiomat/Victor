@@ -73,7 +73,9 @@ namespace Victor { namespace Phylo{
 	double PhyloSupport::downa=999.9;
 	double PhyloSupport::ups=999.9;
 	double PhyloSupport::upa=999.9;
+	int PhyloSupport::tokenSize=-1;
 	unsigned int PhyloSupport::weightingScheme=0;
+
 
 	vector<Alignment> PhyloSupport::calcAlignmentV(Alignment *aliSec, vector<vector<double> > &distance , bool ktuples,bool verbose){
 		string seq1Name, seq2Name, seq1, seq2, sec1, sec2;
@@ -112,7 +114,8 @@ namespace Victor { namespace Phylo{
 
 		//Global Align
 		Align *a;
-		cout << "Start Suboptimal Needleman-Wunsch alignments:" << endl;
+		if(verbose)
+			cout << "Start Suboptimal Needleman-Wunsch alignments:" << endl;
 
 		double suboptPenaltyMul=1;
 		double suboptPenaltyAdd=1;
@@ -182,7 +185,8 @@ namespace Victor { namespace Phylo{
 			alignV[index]=newAli;
 		}//end for index
 
-		cout<<"NWAlign ok"<<endl;
+		if(verbose)
+			cout<<"NWAlign ok"<<endl;
 		return alignV;
 	}
 
@@ -222,7 +226,8 @@ namespace Victor { namespace Phylo{
 
 		//Global Align
 		Align *a;
-		cout << "Start Suboptimal Needleman-Wunsch alignments:" << endl;
+		if(verbose)
+			cout << "Start Suboptimal Needleman-Wunsch alignments:" << endl;
 
 		double suboptPenaltyMul=1;
 		double suboptPenaltyAdd=1;
@@ -242,15 +247,14 @@ namespace Victor { namespace Phylo{
 		a2 = a->generateMultiMatch(suboptNum);
 		if (a2.size() == 0)
 			ERROR("No output alignments generated.", exception);
-		//a2[0].cutTemplate(1);
-		cout<<"NWAlign SvsS OK-------------------"<<endl;
 		vector<string> result(2);
 
-		cout<<"dimension of a2 "<<a2.size()<<" a2[0].getTarget() "<<a2[0].getTarget()<<endl<<" a2[0].getTemplate() "<<a2[0].getTemplate()<<endl<<" a2[0].getScore() "<<a2[0].getScore()<<endl<<""<<""<<""<<""<<endl;
 		result[0]=a2[0].getTarget();
 		result[1]=a2[0].getTemplate();
-		cout<<"result "<<a2.size()<<" result[1] "<<result[1]<<endl<<" result[0] "<<result[0]<<endl;
-		cout<<"NWAlign SvsS Oexit-------------"<<endl;
+		if(verbose){
+			cout<<"result "<<a2.size()<<" result[1] "<<result[1]<<endl<<" result[0] "<<result[0]<<endl;
+			cout<<"NWAlign SvsS Oexit-------------"<<endl;
+		}
 		return result;
 }
 
@@ -282,7 +286,8 @@ namespace Victor { namespace Phylo{
     		tokenSizeGap2+=gap;
     	}
 
-    	cout<<"AlingMultiSvsMultiS2"<<endl;
+    	if(verbose)
+    		cout<<"AlingMultiSvsMultiS2"<<endl;
  		while(seq1[0].size()%tokenSize!=0){
  			for(unsigned int i=0;i<seq1.size();i++){
  				seq1[i]+="-";
@@ -309,9 +314,6 @@ namespace Victor { namespace Phylo{
     		tokenS1[i]= new SeqNodeGraph(i,i-1+tokenSize,seq1.size(),tempSV,seq2[0].size()/tokenSize);
 
     	}
-
-    	cout<<"dimensione delle sequezne seq1[0].size()="<<seq1[0].size()<<" seq2[0].size() "<<seq2[0].size()<<endl;
-
 
     	for(unsigned int i=0; i<seq2[0].size()/tokenSize2;i++)
     	{
@@ -351,11 +353,6 @@ namespace Victor { namespace Phylo{
 
     	}
 
-    	/*cout<<"print best edge"<<endl;
-    	for(unsigned int i=0; i<edgeFor1.size();i++){
-    		cout<<edgeFor1[i]<<" ";
-    	}
-    	cout<<endl;*/
 
     	//insert in final vector of string
     	for(unsigned int i=0; i<tokenS1.size();i++){
@@ -416,23 +413,8 @@ namespace Victor { namespace Phylo{
 				}
     		}
     	}
-
-    	/*cout<<"la seq alla fine"<<endl;
-    	for(unsigned int i=0; i<finalS.size();i++){
-    		cout<<finalS[i]<<endl;
-    	}*/
-
-
     	return finalS;
-
     }
-
-
-
-
-
-
-
 
 
     /**

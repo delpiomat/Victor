@@ -57,7 +57,7 @@ namespace Victor { namespace Phylo {
 
         // HELPERS:
         static string printClustalWFromat(vector <string> seq);
-
+        double scoreClustalW(vector<string> allignSeq);
 
 
     protected:

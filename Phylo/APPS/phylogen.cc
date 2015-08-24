@@ -76,6 +76,7 @@ sShowHelp() {
             << "\n                     \t --gf=0: UPGMA (default)."
             << "\n                     \t --gf=1: NJ."
 			<< "\n                     \t --gf=2: ClustalW use NJ."
+            << "\n   [--t <int>] 	   \t For decide dimension of token, very important for ClustalW(10%size of first seq)"
             << "\n   [--cSeq <double>] \t Coefficient for sequence alignment (default = 1.0)"
 			<< "\n"
 			<< "\n   [--ktuples]     	\t use ktuples method  formula for calculate distance of pairwise sequence"
@@ -96,7 +97,7 @@ int main(int argc, char **argv) {
     bool verbose=false;
     bool ktuples=false;
     unsigned int weightingScheme;
-
+    int tokenSize;
 
     struct tm* newtime;
 
@@ -128,6 +129,8 @@ int main(int argc, char **argv) {
     getArg("D", downa, argc, argv, 999.9);
     getArg("u", ups, argc, argv, 999.9);
     getArg("U", upa, argc, argv, 999.9);
+
+    getArg("-t", tokenSize, argc, argv, -1);
 
 	getArg("-cSeq", cSeq, argc, argv, 0.80);
 
@@ -163,6 +166,8 @@ int main(int argc, char **argv) {
 		PhyloSupport::ups=downa;
 		PhyloSupport::upa=downa;
 		PhyloSupport::weightingScheme=weightingScheme;
+		PhyloSupport::tokenSize=tokenSize;
+		cout<<tokenSize<<" token size"<<endl;
 
     // --------------------------------------------------
     // 3. Load data
@@ -202,12 +207,20 @@ int main(int argc, char **argv) {
     // 2. Output Tree
     // --------------------------------------------------
 	if(outputFileName=="!"){
-		cout<<"stampiamo l'albero creato "<<endl;
+		cout<<"Print the Tree "<<endl;
 		cout<<out<<endl;
 	}
 	else{
-		cout<<"stampiamo l'albero creato nel file data/"<<outputFileName<<endl;
-		cout<<out<<endl;
+		cout<<"Print the Tree in the file "<<outputFileName<<endl;
+		//write tree in file
+		ofstream outFile("outputFileName");
+		if(!outFile) {
+			cout<<"Error During creation File out.clustalw";
+		}
+		outFile<<out<<endl;
+
+		outFile.close();
+
 	}
 
 	cout<<"------------------------End-------------------------"<<endl;
