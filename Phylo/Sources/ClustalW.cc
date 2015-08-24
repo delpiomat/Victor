@@ -76,7 +76,6 @@ namespace Victor { namespace Phylo{
 		vector <string> seqV(1);
 		vector <double> weigthV(1);
 		for(unsigned int j=1;j<guideTree.getNumberOfLeaf();j++){
-			//cout<<"\t --------- NEW START ---------------"<<j<<endl;
 
 			for(unsigned int i=0;i<nodeTree.size();i++){
 

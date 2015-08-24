@@ -69,7 +69,7 @@ namespace Victor { namespace Phylo {
         void printTaxEdge();
         void calculateAverageTax();
         static void setNode(SeqNodeGraph* node, vector <SeqNodeGraph*> vNode);
-
+        static void setNodeWithWeigth(SeqNodeGraph* node, vector <SeqNodeGraph*> vNode,vector <double> vWeigth1,vector <double> vWeigth2);
 
 
 

@@ -221,6 +221,60 @@ namespace Victor { namespace Phylo{
     }
 
 
+    void SeqNodeGraph::setNodeWithWeigth(SeqNodeGraph* node, vector <SeqNodeGraph*> vNode,vector <double> vWeigth1,vector <double> vWeigth2){
+
+        	//cout<<"dentro set node-----------------"<<endl;
+
+        	//matrix config
+        	string path = getenv("VICTOR_ROOT");
+    		if (path.length() < 3)
+    			cout << "Warning: environment variable VICTOR_ROOT is not set." << endl;
+
+    		string dataPath = path + "data/";
+
+    		//Default matrix
+    		string matrixFileName="blosum62.dat";
+    		matrixFileName = dataPath + matrixFileName;
+    		ifstream matrixFile(matrixFileName.c_str());
+    		if (!matrixFile)
+    			ERROR("Error opening substitution matrix file.", exception);
+    		SubMatrix sub(matrixFile);
+    		//end matrix config
+
+        	for(unsigned int i=0; i<vNode.size( );i++)
+        	{//how much long vNode, how many node[i] in vNode
+        		for(unsigned int j=0; j<vNode[i]->getTotNumSeq() ;j++)
+    			{//how seq in  node[i] of vNode
+        			for(unsigned int x=0; x<vNode[i]->getTokenSize();x++)
+        			{//for all char in one string in node[i] of vNode
+        				for(unsigned int y=0; y<node->getTotNumSeq();y++)
+        				{//for all token of string in node
+        					//if(i==0)
+        						//cout<<"clacolo Score---------"<<endl;
+        					for(unsigned int w=0; w<node->getTokenSize();w++)
+        					{//for all char in each seq of node
+        						node->setTaxEdgeInPosition(i,sub.score[node->getCharOfTokenSeq(y,w)][vNode[i]->getCharOfTokenSeq(j,x)]*vWeigth1[y]*vWeigth2[i]);
+        						if(i==0){
+        							//cout<<" "<<node->getCharOfTokenSeq(y,w)<<" & "<<vNode[i]->getCharOfTokenSeq(j,x)<<endl;
+        							//cout<<"\t lo score in posizione i= "<<i<<" vale "<<node->getTaxEdgeInPosition(i)<<endl;
+        						}
+        					}//end for
+
+        				}//end for
+        			}//end for
+        		}//end for
+        	}//end final for
+        	//cout<<"end of all FOR"<<endl;
+
+        	node->calculateAverageTax();
+        	//cout<<"near return"<<endl;
+        }
+
+
+
+
+
+
 
 
 }} // namespace
