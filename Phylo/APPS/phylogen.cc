@@ -167,7 +167,6 @@ int main(int argc, char **argv) {
 		PhyloSupport::upa=downa;
 		PhyloSupport::weightingScheme=weightingScheme;
 		PhyloSupport::tokenSize=tokenSize;
-		cout<<tokenSize<<" token size"<<endl;
 
     // --------------------------------------------------
     // 3. Load data
@@ -213,7 +212,7 @@ int main(int argc, char **argv) {
 	else{
 		cout<<"Print the Tree in the file "<<outputFileName<<endl;
 		//write tree in file
-		ofstream outFile("outputFileName");
+		ofstream outFile(outputFileName.c_str());
 		if(!outFile) {
 			cout<<"Error During creation File out.clustalw";
 		}

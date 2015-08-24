@@ -168,7 +168,7 @@ namespace Victor { namespace Phylo{
 	    }
 	    outFile<<outString<<endl;
 
-	    cout<<"score of ClustalW "<<scoreClustalW(nodeTree[0]->allignSeq)<<" Token Size for Graph in MultiAling Change TokenSize for best align command --t"<<tokenSize<<endl;
+	    cout<<"score of ClustalW "<<scoreClustalW(nodeTree[0]->allignSeq)<<" Token Size for Graph in MultiAling Change TokenSize for best align command --t. Actualy "<<tokenSize<<endl;
 
 	    outFile.close();
         cout<<"Creation File out.clustalw Complete"<<endl;
