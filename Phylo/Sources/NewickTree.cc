@@ -39,15 +39,13 @@ using namespace std;
 namespace Victor { namespace Phylo{
 
 	// CONSTRUCTORS:
-	/**
-	 *
-	 * @param ad
-	 * @param gf
-	 * @param ss
-	 */
+
 
 std::vector<double> distance;
 
+/**
+ *@Description for create void node
+ */
 	NewickTree::NewickTree() {
 
 		root=new iNode;
@@ -69,8 +67,15 @@ std::vector<double> distance;
 		root->numberOfChildLeaf=0;
 	}
 
+	/**
+	 *@Description for create node of tree
+	 *@param int position numeber of sequenze in FASTA file
+	 *@param string name name of sequence in FASTA file
+	 *@param string pureSeq the  Sequence with no modification like in FASTA file
+	 *@param double divR divergence usefull inNJ method
+	 */
 	NewickTree::NewickTree(int position,string name,string pureSeq,double divR){
-
+		//void
 		root=new iNode;
 		root->left=NULL;
 		root->right=NULL;
@@ -81,8 +86,7 @@ std::vector<double> distance;
 		root->ClustalW=false;
 		root->isRigth=false;
 		root->isLeft=false;
-
-
+		//important
 		root->name=name;
 		root->divergenceR=divR;
 		root->seq=pureSeq;
@@ -91,9 +95,14 @@ std::vector<double> distance;
 		root->numberOfChildLeaf=0;
 	}
 
-
+	/**
+	 *@Description for create node of tree
+	 *@param int position numeber of sequenze in FASTA file
+	 *@param string name name of sequence in FASTA file
+	 *@param string pureSeq the  Sequence with no modification like in FASTA file
+	 */
 	NewickTree::NewickTree(int position,string name,string pureSeq){
-
+		//void
 		root=new iNode;
 		root->left=NULL;
 		root->right=NULL;
@@ -104,8 +113,7 @@ std::vector<double> distance;
 		root->ClustalW=false;
 		root->isRigth=false;
 		root->isLeft=false;
-
-
+		//important
 		root->name=name;
 		root->divergenceR=0;
 		root->seq=pureSeq;
@@ -118,8 +126,11 @@ std::vector<double> distance;
 
 	/**
 	 *@Description Create new Tree. Used for union two different Tree.
+	 *@param NewickTree *rTree the right child
+	 *@param NewickTree *lTree the left child
 	 */
 	NewickTree::NewickTree( NewickTree *rTree, NewickTree *lTree) {
+		//void
 		root=new iNode;
 		root->allignSeq;
 		root->branchLength=-1;
@@ -127,8 +138,7 @@ std::vector<double> distance;
 		root->ClustalW=false;
 		root->isRigth=false;
 		root->isLeft=false;
-
-
+		//important
 		root->isLeaf=false;//internal
 		int  tmp=0;
 		if(rTree->isLeaf())
@@ -210,13 +220,13 @@ std::vector<double> distance;
     	return leafList.size();
     }
 
-	// MODIFIERS:
-
-
-
     // OPERATORS:
-    /**
-     * */
+	/**
+	 *@Description for create phylogenic Tree use NJ method
+	 *@param Align2::Alignment ali alignament of starting sequence
+	 *@param bool ktuples decide to use ktuples method for calculate identity of 2 sequence
+	 *@param bool verbose for more information on video during computing.
+	 */
     void NewickTree::neighborJoining(Align2::Alignment ali,bool ktuples, bool verbose){
 
 		int Nseq=ali.size()+1;//number of seq
@@ -509,9 +519,13 @@ std::vector<double> distance;
 	}//end method
 
 
-    /**
-     *
-     * */
+    // OPERATORS:
+	/**
+	 *@Description for create phylogenic Tree use UPGMA method
+	 *@param Align2::Alignment ali alignament of starting sequence
+	 *@param bool ktuples decide to use ktuples method for calculate identity of 2 sequence
+	 *@param bool verbose for more information on video during computing.
+	 */
     void NewickTree::upgma(Align2::Alignment ali,bool ktuples, bool verbose){
 
     		int Nseq=ali.size()+1;//number of seq
@@ -658,13 +672,17 @@ std::vector<double> distance;
 
 
     // OPERATORS:
-    /// Print in a string the tree using Newick format
+	/**
+	 *@Description Print in a string the tree using Newick format
+	 */
     string NewickTree::printNewickTree()
     {
     	return printNewickTreeNode(*root)+";";
     }
 
-
+	/**
+	 *@Description helper method for recursion look NewickTree::printNewickTree()
+	 */
     string NewickTree::printNewickTreeNode(iNode node)
     {
     	string printTree="";
@@ -685,6 +703,10 @@ std::vector<double> distance;
 
     }
 
+	/**
+	 *@Description calculate the wiegth of seq usign guide tree
+	 *	very important for ClustalW
+	 */
     double NewickTree::calcWeigth(iNode* seq){
     	double w=seq->branchLength;
     	if(seq->parent!=NULL){
@@ -695,7 +717,7 @@ std::vector<double> distance;
 
 
     /**
-     * Return max values of this node children branchLength.
+     *@Description Return max values of this node children branchLength.
      * Return zero if left child and right are NULL
      */
 

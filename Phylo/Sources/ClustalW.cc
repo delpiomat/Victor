@@ -14,6 +14,14 @@
     along with Victor.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// --*- C++ -*------x-----------------------------------------------------------
+//
+//
+// Description:     ClustalW allignemt.
+//                  http://www.ebi.ac.uk/Tools/msa/clustalw2/
+//
+// -----------------x-----------------------------------------------------------
+
 
 // Includes:
 #include <SubMatrix.h>
@@ -44,6 +52,7 @@ using namespace std;
 
 namespace Victor { namespace Phylo{
 
+	// CONSTRUCTORS:
 
 	ClustalW::ClustalW(){
 	}
@@ -59,7 +68,12 @@ namespace Victor { namespace Phylo{
 	ClustalW::~ClustalW() {
 	}
 
-
+    // OPERATORS:
+	/**
+	 *@Description Create progressive Align strating from a guide tree.
+	 *
+	 *@return
+	 */
 	void ClustalW::progressiveAlign(){
 
 		cout<<" Progressive alignament Start "<<endl;
@@ -178,7 +192,12 @@ namespace Victor { namespace Phylo{
 	}
 
 
-
+    // HELPERS:
+	/**
+	 *@Description Returns String which represents the correct rappresentation in ClustalW format
+	 *@param vector<string> seq Vector of sequence.
+	 *@return string txt Correct rappresetation in CLustalW format(50 char by lane)
+	 */
 	string ClustalW::printClustalWFromat(vector<string> seq){
 		string txt="";
 		string tmp="";
@@ -200,6 +219,12 @@ namespace Victor { namespace Phylo{
 		return txt;
 	}
 
+
+	/**
+	 *@Description Calculate A sort of simalarity score on ClustalW align consider how much each column of char are similar
+	 *@param vector<string> seq Vector of sequence.
+	 *@return double score the score of similarity.
+	 */
 	double ClustalW::scoreClustalW(vector<string> allignSeq){
 		double score=0;
 		double partialScore=0;

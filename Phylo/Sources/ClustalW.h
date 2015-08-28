@@ -41,27 +41,26 @@ namespace Victor { namespace Phylo {
 
     public:
 
-        // CONSTRUCTORS/DESTRUCTOR:
+        // CONSTRUCTORS
+    	// void constructor.
     	ClustalW();
+    	// starting from guide Tree constructor.
     	ClustalW(NewickTree gT);
 
-
+    	//DESTRUCTOR:
         ~ClustalW();
 
 
-    	// PREDICATES:
-
-
-
-	    // OPERATORS:
-
         // HELPERS:
+        //Generate and return string of sequenze in format .ClustalW
         static string printClustalWFromat(vector <string> seq);
+        //calculate score based on similairty of all sequence in CLustalW allign (max score=1)
         double scoreClustalW(vector<string> allignSeq);
 
 
     protected:
 	    // OPERATORS:
+        //Apply ClustalW using Guide Tree
         void progressiveAlign();
 
         // HELPERS:

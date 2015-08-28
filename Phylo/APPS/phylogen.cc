@@ -14,12 +14,14 @@
     along with Victor.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// --*- C++ -*------x-----------------------------------------------------------
+// --*- C++ -*------x------------------------------------------------------------------------------
 //
 //
-// Description:
-//
-// -----------------x-----------------------------------------------------------
+// Description:     This program calculates phylogenetic trees starting from FASTA file.
+//					Choose from 2 different methos Neighbor joining and UPGMA.
+//					This program calculates ClustalW allignment and use NJ for create guide trees.
+// -----------------x------------------------------------------------------------------------------
+
 #include <Alignment.h>
 #include <AlignmentData.h>
 #include <SequenceData.h>
@@ -91,7 +93,7 @@ int main(int argc, char **argv) {
 
     string inputFileName, outputFileName, matrixFileName, matrixStrFileName;
     double openGapPenalty, extensionGapPenalty;
-    unsigned int  gapFunction, function;
+    unsigned int  function;
     double cSeq;
     double downs, downa, ups, upa;
     bool verbose=false;
@@ -121,7 +123,6 @@ int main(int argc, char **argv) {
 
     getArg("-ws", weightingScheme, argc, argv, 0);
 
-	getArg("-gf", gapFunction, argc, argv, 0);
 	getArg("o", openGapPenalty, argc, argv, 12.00);
 	getArg("e", extensionGapPenalty, argc, argv, 3.00);
 

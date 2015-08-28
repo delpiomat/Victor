@@ -29,6 +29,7 @@
 using std::string;
 using std::vector;
 
+//rappresent the node of a phylogenic tree
 struct iNode
 {
 	string name;
@@ -71,30 +72,26 @@ namespace Victor { namespace Phylo {
 
     	// PREDICATES:
     	iNode *getRoot();
-
     	iNode *getRightChild();
-
     	iNode*getLeftChild();
-
     	iNode*getParent();
 
-        string getName();
-
+    	string getName();
         string getPureSeq();
 
         double getValueOFChildBranchLength();
-
         double getRdiv();
+        double getWeigth();
 
         bool isLeaf();
 
         int getNumOfChildren();
 
-        double getWeigth();
+        unsigned int getNumberOfLeaf();
 
         NewickTree getLeafInPosition(unsigned int index);
 
-        unsigned int getNumberOfLeaf();
+
 
 
 	    // OPERATORS:
@@ -108,7 +105,7 @@ namespace Victor { namespace Phylo {
 	    void setAlingSeq(vector<string> vSeq);
 
 
-        /// Print in a string the tree using Newick format
+	    // Print in a string the tree using Newick format
         string printNewickTree();
 
     protected:
