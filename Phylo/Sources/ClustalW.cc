@@ -103,14 +103,9 @@ namespace Victor { namespace Phylo{
 		cout<<"percent to the end:"<<endl;
 		unsigned int j=1;
 		while(nodeTree.size()>1){
-			cout<<""<<((j)*100/(guideTree.getNumberOfLeaf())*100)/100<<"%"<<endl;
-			//cout<<"j="<<j<<endl;
-			//cout<<"guideTree.getNumberOfLeaf()= "<<guideTree.getNumberOfLeaf()<<endl;
-			//cout<<"nodeTree.size()= "<<nodeTree.size()<<endl;
+			cout<<""<<((j)*100/(guideTree.getNumberOfLeaf())*100)/100<<"% ";
 			for(unsigned int i=0;i<nodeTree.size();i++){//for each node in nodeTree
-				//cout<<"i="<<i<<endl;
 				if(nodeTree.size()==2 && i==0) {
-					//cout<<"j==guideTree.getNumberOfLeaf() && i==0 "<<"i= "<<i<<" j= "<<j<<"guideTree.getNumberOfLeaf()= "<<guideTree.getNumberOfLeaf()<<endl;
 					if(nodeTree[0]->allignSeq[0].size()<nodeTree[1]->allignSeq[0].size()){
 						tmpV=PhyloSupport::AlingMultiSvsMultiS(nodeTree[0]->allignSeq,nodeTree[1]->allignSeq,nodeTree[0]->weigthV,nodeTree[1]->weigthV,false,tokenSize);
 						//insert name
@@ -212,9 +207,10 @@ namespace Victor { namespace Phylo{
 	    if(!outFile) {
 	        cout<<"Error During creation File out.clustalw";
 	    }
-	    outFile<<outString<<endl;
+	   	outFile<<outString<<endl;
 
-	    cout<<"score of ClustalW "<<scoreClustalW(nodeTree[0]->allignSeq,nodeTree[0]->weigthV)<<" Token Size for Graph in MultiAling Change TokenSize for best align command --t. Actualy "<<tokenSize<<endl;
+	    setScore(scoreClustalW(nodeTree[0]->allignSeq,nodeTree[0]->weigthV));
+	    cout<<endl<<"score of ClustalW "<<getScore()<<" Token Size for Graph in MultiAling Change TokenSize for best align command --t. Actualy "<<tokenSize<<endl;
 
 	    outFile.close();
         cout<<"Creation File out.clustalw Complete"<<endl;

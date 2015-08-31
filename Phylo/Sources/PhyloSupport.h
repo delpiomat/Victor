@@ -82,6 +82,8 @@ namespace Victor { namespace Phylo {
 		static double downs, downa, ups, upa;
 		static unsigned int weightingScheme;
 		static int tokenSize;
+		static bool verbose;
+
 
 
     protected:

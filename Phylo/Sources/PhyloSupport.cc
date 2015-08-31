@@ -75,6 +75,7 @@ namespace Victor { namespace Phylo{
 	double PhyloSupport::upa=999.9;
 	int PhyloSupport::tokenSize=-1;
 	unsigned int PhyloSupport::weightingScheme=0;
+	bool PhyloSupport::verbose=false;
 
 
 	vector<Alignment> PhyloSupport::calcAlignmentV(Alignment *aliSec, vector<vector<double> > &distance , bool ktuples,bool verbose){

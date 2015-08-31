@@ -168,6 +168,7 @@ int main(int argc, char **argv) {
 		PhyloSupport::upa=downa;
 		PhyloSupport::weightingScheme=weightingScheme;
 		PhyloSupport::tokenSize=tokenSize;
+		PhyloSupport::verbose=verbose;
 
     // --------------------------------------------------
     // 3. Load data
@@ -221,27 +222,6 @@ int main(int argc, char **argv) {
 		newtime = localtime(&t);
 		cout <<"localTime:"<< newtime->tm_hour << " hour " << newtime->tm_min<<" min "<<newtime->tm_sec<<" sec "<< endl;
 
-	}
-	else if(function==3){//hard search good Clustal W
-		cout<<"##########################################Starting PhyloTreeNJ########################################"<<endl;
-		time(&t);
-		newtime = localtime(&t);
-		cout <<"localTime:"<< newtime->tm_hour << " hour " << newtime->tm_min<<" min "<<newtime->tm_sec<<" sec "<< endl;
-		tree.neighborJoining(aliSec,ktuples,verbose);
-		cout<<"##########################################Guide Tree create with PhyloTreeNJ################################"<<endl;
-		time(&t);
-		newtime = localtime(&t);
-		cout <<"localTime:"<< newtime->tm_hour << " hour " << newtime->tm_min<<" min "<<newtime->tm_sec<<" sec "<< endl;
-		out=tree.printNewickTree();
-		cout<<"##########################################Starting ClustalW###############################"<<endl;
-		time(&t);
-		newtime = localtime(&t);
-		cout <<"localTime:"<< newtime->tm_hour << " hour " << newtime->tm_min<<" min "<<newtime->tm_sec<<" sec "<< endl;
-		cout<<"number of leaf from main "<<tree.getNumberOfLeaf()<<endl;
-		cw= ClustalW(tree);
-		time(&t);
-		newtime = localtime(&t);
-		cout <<"localTime:"<< newtime->tm_hour << " hour " << newtime->tm_min<<" min "<<newtime->tm_sec<<" sec "<< endl;
 	}
 	else
 	{
