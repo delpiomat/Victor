@@ -78,7 +78,7 @@ namespace Victor { namespace Phylo{
 
 		cout<<" Progressive alignament Start "<<endl;
 		vector<string> tmpV(2);
-		vector<double> tmpWeigth(2);
+		//vector<double> tmpWeigth(2);
 		int tokenSize=PhyloSupport::tokenSize;
 
 
@@ -96,13 +96,16 @@ namespace Victor { namespace Phylo{
 		vector <string> seqV(1);
 		vector <double> weigthV(1);
 		cout<<"percent to the end:"<<endl;
-		for(unsigned int j=1;j<guideTree.getNumberOfLeaf();j++){
+		for(unsigned int j=1;j<guideTree.getNumberOfLeaf()+1;j++){//for each leaf of guide tree
+
 			cout<<""<<((j)*100/(guideTree.getNumberOfLeaf())*100)/100<<"%"<<endl;
-
-			for(unsigned int i=0;i<nodeTree.size();i++){
-
-				if(j==guideTree.getNumberOfLeaf() && i==0)
-				{
+			cout<<"j="<<j<<endl;
+			cout<<"guideTree.getNumberOfLeaf()= "<<guideTree.getNumberOfLeaf()<<endl;
+			cout<<"nodeTree.size()= "<<nodeTree.size()<<endl;
+			for(unsigned int i=0;i<nodeTree.size();i++){//for each node in nodeTree
+			cout<<"i="<<i<<endl;
+				if(j==guideTree.getNumberOfLeaf() && i==0) {
+					cout<<"j==guideTree.getNumberOfLeaf() && i==0 "<<"i= "<<i<<" j= "<<j<<"guideTree.getNumberOfLeaf()= "<<guideTree.getNumberOfLeaf()<<endl;
 					if(nodeTree[0]->allignSeq[0].size()<nodeTree[1]->allignSeq[0].size())
 						tmpV=PhyloSupport::AlingMultiSvsMultiS(nodeTree[0]->allignSeq,nodeTree[1]->allignSeq,nodeTree[0]->weigthV,nodeTree[1]->weigthV,false,tokenSize);
 					else
@@ -110,7 +113,7 @@ namespace Victor { namespace Phylo{
 					nodeTree[1]->ClustalW=true;
 					nodeTree[0]->allignSeq=tmpV;
 				}
-				else if(j==1){
+				else if(j==1){//populate nodeTree
 					seqV[0]=nodeTree[i]->seq;
 					weigthV[0]=nodeTree[i]->weigth;
 					nodeTree[i]->allignSeq=seqV;
@@ -166,6 +169,7 @@ namespace Victor { namespace Phylo{
 				}
 				else if(nodeTree[i]->ClustalW){
 					nodeTree.erase(nodeTree.begin()+i);
+					cout<<"nodeTree"<<nodeTree.size()<<endl;
 				}
 
 			}
