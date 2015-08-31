@@ -178,25 +178,70 @@ int main(int argc, char **argv) {
 	string out="Error Tree";
 	if(function==0){
 		cout<<"##########################################Starting PhyloTreeUPGMA#####################################"<<endl;
+		time(&t);
+		newtime = localtime(&t);
+		cout <<"localTime:"<< newtime->tm_hour << " hour " << newtime->tm_min<<" min "<<newtime->tm_sec<<" sec "<< endl;
 		tree.upgma(aliSec,ktuples,verbose);
 		cout<<"##########################################Tree create with PhyloTreeUPGMA#############################"<<endl;
+		time(&t);
+		newtime = localtime(&t);
+		cout <<"localTime:"<< newtime->tm_hour << " hour " << newtime->tm_min<<" min "<<newtime->tm_sec<<" sec "<< endl;
 		out=tree.printNewickTree();
 	}
 	else if(function==1){
 		cout<<"##########################################Starting PhyloTreeNJ########################################"<<endl;
+		time(&t);
+		newtime = localtime(&t);
+		cout <<"localTime:"<< newtime->tm_hour << " hour " << newtime->tm_min<<" min "<<newtime->tm_sec<<" sec "<< endl;
 		tree.neighborJoining(aliSec,ktuples,verbose);
 		cout<<"##########################################Tree create with PhyloTreeNJ################################"<<endl;
+		time(&t);
+		newtime = localtime(&t);
+		cout <<"localTime:"<< newtime->tm_hour << " hour " << newtime->tm_min<<" min "<<newtime->tm_sec<<" sec "<< endl;
 		out=tree.printNewickTree();
 	}
 	else if(function==2){
 		cout<<"##########################################Starting PhyloTreeNJ########################################"<<endl;
+		time(&t);
+		newtime = localtime(&t);
+		cout <<"localTime:"<< newtime->tm_hour << " hour " << newtime->tm_min<<" min "<<newtime->tm_sec<<" sec "<< endl;
 		tree.neighborJoining(aliSec,ktuples,verbose);
 		cout<<"##########################################Guide Tree create with PhyloTreeNJ################################"<<endl;
+		time(&t);
+		newtime = localtime(&t);
+		cout <<"localTime:"<< newtime->tm_hour << " hour " << newtime->tm_min<<" min "<<newtime->tm_sec<<" sec "<< endl;
 		out=tree.printNewickTree();
 		cout<<"##########################################Starting ClustalW###############################"<<endl;
+		time(&t);
+		newtime = localtime(&t);
+		cout <<"localTime:"<< newtime->tm_hour << " hour " << newtime->tm_min<<" min "<<newtime->tm_sec<<" sec "<< endl;
 		cout<<"number of leaf from main "<<tree.getNumberOfLeaf()<<endl;
 		cw= ClustalW(tree);
+		time(&t);
+		newtime = localtime(&t);
+		cout <<"localTime:"<< newtime->tm_hour << " hour " << newtime->tm_min<<" min "<<newtime->tm_sec<<" sec "<< endl;
 
+	}
+	else if(function==3){//hard search good Clustal W
+		cout<<"##########################################Starting PhyloTreeNJ########################################"<<endl;
+		time(&t);
+		newtime = localtime(&t);
+		cout <<"localTime:"<< newtime->tm_hour << " hour " << newtime->tm_min<<" min "<<newtime->tm_sec<<" sec "<< endl;
+		tree.neighborJoining(aliSec,ktuples,verbose);
+		cout<<"##########################################Guide Tree create with PhyloTreeNJ################################"<<endl;
+		time(&t);
+		newtime = localtime(&t);
+		cout <<"localTime:"<< newtime->tm_hour << " hour " << newtime->tm_min<<" min "<<newtime->tm_sec<<" sec "<< endl;
+		out=tree.printNewickTree();
+		cout<<"##########################################Starting ClustalW###############################"<<endl;
+		time(&t);
+		newtime = localtime(&t);
+		cout <<"localTime:"<< newtime->tm_hour << " hour " << newtime->tm_min<<" min "<<newtime->tm_sec<<" sec "<< endl;
+		cout<<"number of leaf from main "<<tree.getNumberOfLeaf()<<endl;
+		cw= ClustalW(tree);
+		time(&t);
+		newtime = localtime(&t);
+		cout <<"localTime:"<< newtime->tm_hour << " hour " << newtime->tm_min<<" min "<<newtime->tm_sec<<" sec "<< endl;
 	}
 	else
 	{

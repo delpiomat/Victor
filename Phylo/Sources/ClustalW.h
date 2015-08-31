@@ -54,16 +54,29 @@ namespace Victor { namespace Phylo {
         // HELPERS:
         //Generate and return string of sequenze in format .ClustalW
         static string printClustalWFromat(vector <string> seq);
-        //calculate score based on similairty of all sequence in CLustalW allign (max score=1)
+        //Generate and return string of sequenze in format .ClustalW with name
+        static string printClustalWFromat(vector <string> seq, vector <string> names);
+        //calculate score based on similairty of all sequence in CLustalW allign no  weigth consider
         double scoreClustalW(vector<string> allignSeq);
+        //calculate score based on similairty of all sequence in CLustalW allign with weigth
+        double scoreClustalW(vector<string> allignSeq, vector<double> w);
 
+	    // OPERATORS:
+        void setTokenSize(unsigned int t);
+        void setScore(double s);
+
+	    // OPERATORS:
+        unsigned int getTokenSize();
+        double getScore();
 
     protected:
 	    // OPERATORS:
         //Apply ClustalW using Guide Tree
         void progressiveAlign();
+        // ATTRIBUTES:
+        unsigned int tokenSize;
+        double score;
 
-        // HELPERS:
 
 
         // ATTRIBUTES:

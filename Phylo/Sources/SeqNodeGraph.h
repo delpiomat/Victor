@@ -34,9 +34,9 @@ using std::vector;
 // Global constants, typedefs, etc. (to avoid):
 namespace Victor { namespace Phylo {
 
-    /**@brief  Methods to manages the global statistic data.
+    /**@brief  Class for create node of a graph of sequences
      * 
-     *@Description  Use for create Tree during phylogeny
+     *@Description  Use for create ClustalW, for create a graph of token
      * */
     class SeqNodeGraph{
     public:
@@ -87,13 +87,7 @@ namespace Victor { namespace Phylo {
        double averageTax;
 
 
-
-
-
-
-
     private:
-        // HELPERS:
 
 
 

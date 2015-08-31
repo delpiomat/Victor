@@ -35,7 +35,7 @@ namespace Victor { namespace Phylo {
 
     /**@brief  Methods to manages the global statistic data.
      * 
-     *@Description  Use for create Tree during phylogeny
+     *@Description  Use for create Tree during phylogeny and controll the parameter in NJ, UPGMA and CLUSTALW
      * */
     class PhyloSupport {
     public:
@@ -47,24 +47,35 @@ namespace Victor { namespace Phylo {
         ~PhyloSupport();
 
 
-        //STATIC
+        //STATIC:
+
         //Calc multi Align
         static vector<Alignment> calcAlignmentV(Alignment *aliSec, vector<vector<double> > &distance, bool ktuples=false, bool verbose=false);
         //Calc distance from 2 seq of DNA or protein
         static double distanceCalcTwoSeq(string seq1,string seq2);
+        //Calc distance from 2 seq of DNA or protein use k-tuples method
         static double distanceCalcTwoSeqktuples(string seq1,string seq2);
+        //for split string
         static std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
         static std::vector<std::string> split(const std::string &s, char delim);
+        //for calculate divergent usefull for NJ
         static double calcDivR(vector<double> vDist);
+        //for print matrix of double
         static void printMatrix(vector<vector<double> > &distance);
+        //aling 2 sequence
         static vector<string> AlingSvsS(string seq1,string seq2,bool verbose=false);
-        //new
+        //aling 2 or more sequence use method of graph
         static vector<string> AlingMultiSvsMultiS(vector <string> seq1,vector <string> seq2,vector <double> vWeigth1,vector <double> vWeigth2,bool verbose=false,int tokenSize=1);
+        //insert a gap in certain position in a string
         static string insertGapPosition(string seq, int position);
+        //cast a int to string
         static string intToString( int num );
+        //to merge 2 vector of string, order of merge is v=v1[0],v1[1]....v2[0]....v2[n-1]
+        static vector<string> mergeStringVector(vector <string> v1,vector <string> v2 );
+        //to merge 2 vector of double, order of merge is v=v1[0],v1[1]....v2[0]....v2[n-1]
+        static vector<double> mergeDoubleVector(vector <double> v1,vector <double> v2 );
 
-
-
+        //static parameter for NJ UPGMA and ClustalW
         static double openGapPenalty;
         static double extensionGapPenalty;
 		static double cSeq;
@@ -74,14 +85,10 @@ namespace Victor { namespace Phylo {
 
 
     protected:
-    // HELPERS:
-
-    // ATTRIBUTES:
-
 
 
     private:
-        // HELPERS:
+
 
     };
 

@@ -47,6 +47,7 @@ struct iNode
 	double divergenceR;//for NJ
 	double weigth;//for ClustalW
 	vector<double> weigthV;//for ClustalW
+	vector<string> nameV;//for ClustalW
 	bool ClustalW;//for ClustalW
 
 };

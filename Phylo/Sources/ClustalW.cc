@@ -55,6 +55,8 @@ namespace Victor { namespace Phylo{
 	// CONSTRUCTORS:
 
 	ClustalW::ClustalW(){
+		score=0;
+		tokenSize=0;
 	}
 
 	ClustalW::ClustalW(NewickTree gT) {
@@ -78,7 +80,6 @@ namespace Victor { namespace Phylo{
 
 		cout<<" Progressive alignament Start "<<endl;
 		vector<string> tmpV(2);
-		//vector<double> tmpWeigth(2);
 		int tokenSize=PhyloSupport::tokenSize;
 
 
@@ -93,90 +94,117 @@ namespace Victor { namespace Phylo{
 			cout<<"Use Default token Size "<<tokenSize<<endl;
 		}
 
+		setTokenSize(tokenSize);
+
 		vector <string> seqV(1);
 		vector <double> weigthV(1);
+		vector <string> nameV(1);
+		vector <string> nameFinal(guideTree.getNumberOfLeaf());
 		cout<<"percent to the end:"<<endl;
-		for(unsigned int j=1;j<guideTree.getNumberOfLeaf()+1;j++){//for each leaf of guide tree
-
+		unsigned int j=1;
+		while(nodeTree.size()>1){
 			cout<<""<<((j)*100/(guideTree.getNumberOfLeaf())*100)/100<<"%"<<endl;
-			cout<<"j="<<j<<endl;
-			cout<<"guideTree.getNumberOfLeaf()= "<<guideTree.getNumberOfLeaf()<<endl;
-			cout<<"nodeTree.size()= "<<nodeTree.size()<<endl;
+			//cout<<"j="<<j<<endl;
+			//cout<<"guideTree.getNumberOfLeaf()= "<<guideTree.getNumberOfLeaf()<<endl;
+			//cout<<"nodeTree.size()= "<<nodeTree.size()<<endl;
 			for(unsigned int i=0;i<nodeTree.size();i++){//for each node in nodeTree
-			cout<<"i="<<i<<endl;
-				if(j==guideTree.getNumberOfLeaf() && i==0) {
-					cout<<"j==guideTree.getNumberOfLeaf() && i==0 "<<"i= "<<i<<" j= "<<j<<"guideTree.getNumberOfLeaf()= "<<guideTree.getNumberOfLeaf()<<endl;
-					if(nodeTree[0]->allignSeq[0].size()<nodeTree[1]->allignSeq[0].size())
+				//cout<<"i="<<i<<endl;
+				if(nodeTree.size()==2 && i==0) {
+					//cout<<"j==guideTree.getNumberOfLeaf() && i==0 "<<"i= "<<i<<" j= "<<j<<"guideTree.getNumberOfLeaf()= "<<guideTree.getNumberOfLeaf()<<endl;
+					if(nodeTree[0]->allignSeq[0].size()<nodeTree[1]->allignSeq[0].size()){
 						tmpV=PhyloSupport::AlingMultiSvsMultiS(nodeTree[0]->allignSeq,nodeTree[1]->allignSeq,nodeTree[0]->weigthV,nodeTree[1]->weigthV,false,tokenSize);
-					else
+						//insert name
+						nodeTree[0]->nameV=PhyloSupport::mergeStringVector(nodeTree[0]->nameV,nodeTree[1]->nameV);
+						//insert weigth
+						nodeTree[0]->weigthV=PhyloSupport::mergeDoubleVector(nodeTree[0]->weigthV,nodeTree[1]->weigthV);
+					}
+					else {
 						tmpV=PhyloSupport::AlingMultiSvsMultiS(nodeTree[1]->allignSeq,nodeTree[0]->allignSeq,nodeTree[1]->weigthV,nodeTree[0]->weigthV,false,tokenSize);
+						//insert name
+						nodeTree[0]->nameV=PhyloSupport::mergeStringVector(nodeTree[1]->nameV,nodeTree[0]->nameV);
+						//insert weigth
+						nodeTree[0]->weigthV=PhyloSupport::mergeDoubleVector(nodeTree[1]->weigthV,nodeTree[0]->weigthV);
+					}
 					nodeTree[1]->ClustalW=true;
 					nodeTree[0]->allignSeq=tmpV;
+
 				}
 				else if(j==1){//populate nodeTree
 					seqV[0]=nodeTree[i]->seq;
 					weigthV[0]=nodeTree[i]->weigth;
+					nameV[0]=nodeTree[i]->name;
+					nodeTree[i]->nameV=nameV;
 					nodeTree[i]->allignSeq=seqV;
 					nodeTree[i]->weigthV=weigthV;
 				}
-				else if(j==2 && nodeTree[i]->parent->numberOfChildLeaf==2){
+				else if(j==2 && nodeTree[i]->parent->numberOfChildLeaf==2){//first lap of align only seq VS seq
 					tmpV=PhyloSupport::AlingSvsS(nodeTree[i]->seq,nodeTree[i]->seq);
 					weigthV[0]=nodeTree[i]->weigth;
+					nameV[0]=nodeTree[i]->name;
 					if(weigthV.size()==1)
 						weigthV.push_back(nodeTree[i+1]->weigth);
 					else
 						weigthV[1]=nodeTree[i+1]->weigth;
+					if(nameV.size()==1)
+						nameV.push_back(nodeTree[i+1]->name);
+					else
+						nameV[1]=nodeTree[i+1]->name;
 
 					nodeTree.erase(nodeTree.begin()+i+1);
 					nodeTree[i]->parent->allignSeq=tmpV;
 					nodeTree[i]->parent->weigthV=weigthV;
+					nodeTree[i]->parent->nameV=nameV;
 					nodeTree[i]=nodeTree[i]->parent;
 				}
-				else if(j>2 && nodeTree[i]->parent->numberOfChildLeaf==j && !nodeTree[i]->ClustalW){
+				else if(j>2 && nodeTree[i]->parent->numberOfChildLeaf==(int)j && !nodeTree[i]->ClustalW && i<nodeTree.size()){
 
 					if(nodeTree[i]->isLeft){
-						if(nodeTree[i]->allignSeq[0].size()<nodeTree[i]->parent->right->allignSeq[0].size())
+						if(nodeTree[i]->allignSeq[0].size()<nodeTree[i]->parent->right->allignSeq[0].size()) {
 							tmpV=PhyloSupport::AlingMultiSvsMultiS(nodeTree[i]->allignSeq,nodeTree[i]->parent->right->allignSeq,nodeTree[i]->weigthV,nodeTree[i]->parent->right->weigthV,false,tokenSize);
-						else
+							//insert name
+							nodeTree[i]->parent->nameV=PhyloSupport::mergeStringVector(nodeTree[i]->nameV,nodeTree[i]->parent->right->nameV);
+							//insert weigth
+							nodeTree[i]->parent->weigthV=PhyloSupport::mergeDoubleVector(nodeTree[i]->weigthV,nodeTree[i]->parent->right->weigthV);
+						}
+						else {
 							tmpV=PhyloSupport::AlingMultiSvsMultiS(nodeTree[i]->parent->right->allignSeq,nodeTree[i]->allignSeq,nodeTree[i]->parent->right->weigthV,nodeTree[i]->weigthV,false,tokenSize);
+							//insert name
+							nodeTree[i]->parent->nameV=PhyloSupport::mergeStringVector(nodeTree[i]->parent->right->nameV,nodeTree[i]->nameV);
+							//insert weigth
+							nodeTree[i]->parent->weigthV=PhyloSupport::mergeDoubleVector(nodeTree[i]->parent->right->weigthV,nodeTree[i]->weigthV);
+						}
 						nodeTree[i]->parent->right->ClustalW=true;
-						vector <double> weigthTMP(nodeTree[i]->weigthV.size()+nodeTree[i]->parent->right->weigthV.size());
-						for(unsigned int y=0;y<nodeTree[i]->weigthV.size();y++){
-							weigthTMP[y]=nodeTree[i]->weigthV[y];
-						}
-						for(unsigned int y=0;y<nodeTree[i]->parent->right->weigthV.size();y++){
-							weigthTMP[y+nodeTree[i]->weigthV.size()]=nodeTree[i]->parent->right->weigthV[y];
-						}
-						nodeTree[i]->parent->weigthV=weigthTMP;
 					}
 					else{//is right child
-						if(nodeTree[i]->allignSeq[0].size()<nodeTree[i]->parent->left->allignSeq[0].size())
+						if(nodeTree[i]->allignSeq[0].size()<nodeTree[i]->parent->left->allignSeq[0].size()) {
 							tmpV=PhyloSupport::AlingMultiSvsMultiS(nodeTree[i]->allignSeq,nodeTree[i]->parent->left->allignSeq,nodeTree[i]->weigthV,nodeTree[i]->parent->right->weigthV,false,tokenSize);
-						else
+							//insert name
+							nodeTree[i]->parent->nameV=PhyloSupport::mergeStringVector(nodeTree[i]->nameV,nodeTree[i]->parent->left->nameV);
+							//insert weigth
+							nodeTree[i]->parent->weigthV=PhyloSupport::mergeDoubleVector(nodeTree[i]->parent->left->weigthV,nodeTree[i]->weigthV);
+						}
+						else {
 							tmpV=PhyloSupport::AlingMultiSvsMultiS(nodeTree[i]->parent->left->allignSeq,nodeTree[i]->allignSeq,nodeTree[i]->parent->right->weigthV,nodeTree[i]->weigthV,false,tokenSize);
+							//insert name
+							nodeTree[i]->parent->nameV=PhyloSupport::mergeStringVector(nodeTree[i]->nameV,nodeTree[i]->parent->left->nameV);
+							//insert weigth
+							nodeTree[i]->parent->weigthV=PhyloSupport::mergeDoubleVector(nodeTree[i]->parent->left->weigthV,nodeTree[i]->weigthV);
+						}
 						nodeTree[i]->parent->left->ClustalW=true;
-						vector <double> weigthTMP(nodeTree[i]->weigthV.size()+nodeTree[i]->parent->left->weigthV.size());
-						for(unsigned int y=0;y<nodeTree[i]->weigthV.size();y++){
-							weigthTMP[y]=nodeTree[i]->weigthV[y];
-						}
-						for(unsigned int y=0;y<nodeTree[i]->parent->left->weigthV.size();y++){
-							weigthTMP[y+nodeTree[i]->weigthV.size()]=nodeTree[i]->parent->left->weigthV[y];
-						}
-						nodeTree[i]->parent->weigthV=weigthTMP;
 					}
 					nodeTree[i]=nodeTree[i]->parent;
 					nodeTree[i]->allignSeq=tmpV;
 				}
-				else if(nodeTree[i]->ClustalW){
+				else if(nodeTree[i]->ClustalW && i<nodeTree.size()){
 					nodeTree.erase(nodeTree.begin()+i);
-					cout<<"nodeTree"<<nodeTree.size()<<endl;
 				}
 
 			}
+			j++;
 		}
 
+		string outString=ClustalW::printClustalWFromat(nodeTree[0]->allignSeq,nodeTree[0]->nameV);
 
-		string outString=ClustalW::printClustalWFromat(nodeTree[0]->allignSeq);
 		cout<<endl<<outString<<endl;
 
 		//write clustalW
@@ -186,7 +214,7 @@ namespace Victor { namespace Phylo{
 	    }
 	    outFile<<outString<<endl;
 
-	    cout<<"score of ClustalW "<<scoreClustalW(nodeTree[0]->allignSeq)<<" Token Size for Graph in MultiAling Change TokenSize for best align command --t. Actualy "<<tokenSize<<endl;
+	    cout<<"score of ClustalW "<<scoreClustalW(nodeTree[0]->allignSeq,nodeTree[0]->weigthV)<<" Token Size for Graph in MultiAling Change TokenSize for best align command --t. Actualy "<<tokenSize<<endl;
 
 	    outFile.close();
         cout<<"Creation File out.clustalw Complete"<<endl;
@@ -198,12 +226,12 @@ namespace Victor { namespace Phylo{
 
     // HELPERS:
 	/**
-	 *@Description Returns String which represents the correct rappresentation in ClustalW format
+	 *@Description Returns String which represents the correct rappresentation in ClustalW format with no name of seq
 	 *@param vector<string> seq Vector of sequence.
 	 *@return string txt Correct rappresetation in CLustalW format(50 char by lane)
 	 */
 	string ClustalW::printClustalWFromat(vector<string> seq){
-		string txt="";
+		string txt="CLUSTALW \n";
 		string tmp="";
 		unsigned int j=0;
 		unsigned int index=0;
@@ -223,26 +251,113 @@ namespace Victor { namespace Phylo{
 		return txt;
 	}
 
+	/**
+	 *@Description Returns String which represents the correct rappresentation in ClustalW format with correct name of seq
+	 *@param vector<string> seq Vector of sequence.
+	 *@return string txt Correct rappresetation in CLustalW format(50 char by lane)
+	 */
+	string ClustalW::printClustalWFromat(vector<string> seq, vector <string> names){
+		string txt="";
+		string tmp="";
+		unsigned int j=0;
+		unsigned int index=0;
+		unsigned int dim=50;
+		while(j<seq[0].size()){
+			for(unsigned int i=0;i<seq.size();i++){
+				txt+=names[i]+" \t \t ";
+				for(j=dim*index;j<=dim+dim*index && j<seq[i].size();j++){
+					txt+=seq[i][j];
+				}
+				txt+=" "+PhyloSupport::intToString(j);
+				txt+="\n";
+			}
+			txt+="\n\n";
+			index++;
+		}
+		return txt;
+	}
+
 
 	/**
-	 *@Description Calculate A sort of simalarity score on ClustalW align consider how much each column of char are similar
+	 *@Description Calculate A sort of simalarity score on ClustalW align consider how much each column of char are similar no weigth consider
 	 *@param vector<string> seq Vector of sequence.
 	 *@return double score the score of similarity.
 	 */
 	double ClustalW::scoreClustalW(vector<string> allignSeq){
+		//matrix config
+    	string path = getenv("VICTOR_ROOT");
+		if (path.length() < 3)
+			cout << "Warning: environment variable VICTOR_ROOT is not set." << endl;
+
+		string dataPath = path + "data/";
+
+		//Default matrix
+		string matrixFileName="blosum62.dat";
+		matrixFileName = dataPath + matrixFileName;
+		ifstream matrixFile(matrixFileName.c_str());
+		if (!matrixFile)
+			ERROR("Error opening substitution matrix file.", exception);
+		SubMatrix sub(matrixFile);
+		//end matrix config
 		double score=0;
-		double partialScore=0;
-		for(unsigned int j=0;j<allignSeq[0].size();j++){//num of char in one string
-			for(unsigned int i=1; i<allignSeq.size();i++){//num of string in the vector
-				if(allignSeq[i][j]==allignSeq[i-1][j]){
-					partialScore+=1.0/(allignSeq[0].size()*1.0);
+		for(unsigned int x=0;x<allignSeq.size();x++){//for each vector do score
+			for(unsigned int j=0;j<allignSeq[x].size();j++){//num of char in one string
+				for(unsigned int i=0; i<allignSeq.size();i++){//num of string in the vector
+				if(i!=x)
+					score+=sub.score[allignSeq[x][j]][allignSeq[i][j]];
 				}
 			}
-			score+=partialScore;
-			partialScore=0;
 		}
-		return score/(allignSeq[0].size()*1.0);
+		return score;
+	}
+	/**
+	 *@Description Calculate A sort of simalarity score on ClustalW align consider how much each column of char are similar no weigth consider
+	 *@param vector<string> seq Vector of sequence.
+	 *@param vector<double> w vector of weigth from guide tree
+	 *@return double score the score of similarity.
+	 */
+	double ClustalW::scoreClustalW(vector<string> allignSeq, vector<double> w){
+		//matrix config
+    	string path = getenv("VICTOR_ROOT");
+		if (path.length() < 3)
+			cout << "Warning: environment variable VICTOR_ROOT is not set." << endl;
+
+		string dataPath = path + "data/";
+
+		//Default matrix
+		string matrixFileName="blosum62.dat";
+		matrixFileName = dataPath + matrixFileName;
+		ifstream matrixFile(matrixFileName.c_str());
+		if (!matrixFile)
+			ERROR("Error opening substitution matrix file.", exception);
+		SubMatrix sub(matrixFile);
+		//end matrix config
+		double score=0;
+		for(unsigned int x=0;x<allignSeq.size();x++){//for each vector do score
+			for(unsigned int j=0;j<allignSeq[x].size();j++){//num of char in one string
+				for(unsigned int i=0; i<allignSeq.size();i++){//num of string in the vector
+				if(i!=x)
+					score+=sub.score[allignSeq[x][j]][allignSeq[i][j]]*w[x]*w[i];
+				}
+			}
+		}
+		return score;
 	}
 
+    // PREDICATES:
+    void ClustalW::setTokenSize(unsigned int t){
+    	tokenSize=t;
+    }
+    void ClustalW::setScore(double s){
+    	score=s;
+    }
+
+    // PREDICATES:
+    unsigned int ClustalW::getTokenSize(){
+    	return tokenSize;
+    }
+    double ClustalW::getScore(){
+    	return score;
+    }
 
 }} // namespace

@@ -41,7 +41,10 @@ namespace Victor { namespace Phylo{
 
 	// CONSTRUCTORS:
 
-
+	/**
+	 *@Description Basic constructor, void node
+	 *
+	 */
 	SeqNodeGraph::SeqNodeGraph(){
 		indexStart=0;
 		indexFinish=0;
@@ -55,9 +58,21 @@ namespace Victor { namespace Phylo{
 	}
 
 
+
 	//totNumSeq how much of seq in this node minimun 1
 	//numSeqInS2 how much seq in the seq2 important for size of vector TaxEge;
 	//Weigth depends on guide tree;
+
+	/**
+	 *@Description Basic constructor
+	 *@param totNumS how much of seq in this node minimun 1
+	 *@param numSeqInS2 how much seq in the seq2 important for size of vector TaxEge;
+	 *@param Weigth depends on guide tree
+	 *@param indexS start index
+	 *@param indexF final index
+	 *
+	 */
+
 	SeqNodeGraph::SeqNodeGraph(unsigned int indexS,unsigned int indexF, unsigned int totNumS,vector <string> tokenS,unsigned int numSeqInS2){
 		indexStart=indexS;
 		indexFinish=indexF;
@@ -76,15 +91,16 @@ namespace Victor { namespace Phylo{
 	 *@Description Basic destructor
 	 */
 	SeqNodeGraph::~SeqNodeGraph() {
-		//destroy_tree();//to do
 	}
 
 	// PREDICATES:
+	/**
+	 *@Description find and return the best edge of node
+	 *
+	 */
 	unsigned int SeqNodeGraph::returnBestEdge(){
 		unsigned int best=0;
 		for(unsigned int i=0; i<taxEdge.size();i++){
-			//cout<<"taxEdge[best]<taxEdge["<<i<<"] "<<"best="<<best<<" "<<taxEdge[best]<<" < "<<taxEdge[i]<<" "<<(taxEdge[best]<taxEdge[i])<<endl;
-			//cout<<"calcolo con zero e i= "<<i<<" tax= "<<taxEdge[i]<<endl;
 			if(taxEdge[best]<taxEdge[i]){
 				best=i;
 			}
@@ -93,12 +109,16 @@ namespace Victor { namespace Phylo{
 	}
 
 
-	int SeqNodeGraph::returnBestEdgeAfterIndex(unsigned index){
+	/**
+	 *@Description find and return the best edge of node after some index
+	 *@param unsigned int index from which to start to  find the edge
+	 *
+	 */
+	int SeqNodeGraph::returnBestEdgeAfterIndex(unsigned int index){
 		unsigned int best=index+1;
 		best=index+1;
 		for(unsigned int i=index+1; i<taxEdge.size();i++){
 			if(taxEdge[best]<taxEdge[i]){
-				//cout<<"taxEdge[best]<taxEdge[i] "<<taxEdge[best]<<" < "<<taxEdge[i]<<endl;
 				best=i;
 			}
 		}
@@ -153,6 +173,10 @@ namespace Victor { namespace Phylo{
     	tokenSize=size;
     }
 
+	/**
+	 *@Description for print all edge-taxes of one node
+	 *
+	 */
     void SeqNodeGraph::printTaxEdge(){
     	cout<<"tax vector"<<endl;
     	for(int i=0;i<taxEdge.size();i++){
@@ -161,6 +185,10 @@ namespace Victor { namespace Phylo{
     	cout<<endl;
     }
 
+	/**
+	 *@Description for calculate the averange edge-taxes of node
+	 *
+	 */
     void SeqNodeGraph::calculateAverageTax(){
     	//cout<<"average"<<endl;
     	averageTax=0;
@@ -171,10 +199,13 @@ namespace Victor { namespace Phylo{
     	//cout<<"end averange "<<averageTax<<endl;
     }
 
+	/**
+	 *@Description for a node calculate all value of edges for all other node not consider weigth
+	 *@param SeqNodeGraph* node the node of graph That will be set
+	 *@param vector <SeqNodeGraph*> vNode array of nodes
+	 *
+	 */
     void SeqNodeGraph::setNode(SeqNodeGraph* node, vector <SeqNodeGraph*> vNode){
-
-    	//cout<<"dentro set node-----------------"<<endl;
-
     	//matrix config
     	string path = getenv("VICTOR_ROOT");
 		if (path.length() < 3)
@@ -199,14 +230,10 @@ namespace Victor { namespace Phylo{
     			{//for all char in one string in node[i] of vNode
     				for(unsigned int y=0; y<node->getTotNumSeq();y++)
     				{//for all token of string in node
-    					//if(i==0)
-    						//cout<<"clacolo Score---------"<<endl;
     					for(unsigned int w=0; w<node->getTokenSize();w++)
     					{//for all char in each seq of node
     						node->setTaxEdgeInPosition(i,sub.score[node->getCharOfTokenSeq(y,w)][vNode[i]->getCharOfTokenSeq(j,x)]);
     						if(i==0){
-    							//cout<<" "<<node->getCharOfTokenSeq(y,w)<<" & "<<vNode[i]->getCharOfTokenSeq(j,x)<<endl;
-    							//cout<<"\t lo score in posizione i= "<<i<<" vale "<<node->getTaxEdgeInPosition(i)<<endl;
     						}
     					}//end for
 
@@ -214,13 +241,19 @@ namespace Victor { namespace Phylo{
     			}//end for
     		}//end for
     	}//end final for
-    	//cout<<"end of all FOR"<<endl;
 
     	node->calculateAverageTax();
-    	//cout<<"near return"<<endl;
     }
 
 
+	/**
+	 *@Description for a node calculate all value of edges for all other node consider weigth by guide tree of sequence
+	 *@param SeqNodeGraph* node the node of graph That will be set
+	 *@param vector <SeqNodeGraph*> vNode array of nodes
+	 *@param vector <SeqNodeGraph*> vNode array of nodes
+	 *@param vector <double> vWeigth1 array of Weigth of first array of sequence
+	 *@param vector <double> vWeigth2 array of Weigth of second array of sequence
+	 */
     void SeqNodeGraph::setNodeWithWeigth(SeqNodeGraph* node, vector <SeqNodeGraph*> vNode,vector <double> vWeigth1,vector <double> vWeigth2){
 
         	//cout<<"dentro set node-----------------"<<endl;
@@ -249,14 +282,10 @@ namespace Victor { namespace Phylo{
         			{//for all char in one string in node[i] of vNode
         				for(unsigned int y=0; y<node->getTotNumSeq();y++)
         				{//for all token of string in node
-        					//if(i==0)
-        						//cout<<"clacolo Score---------"<<endl;
         					for(unsigned int w=0; w<node->getTokenSize();w++)
         					{//for all char in each seq of node
         						node->setTaxEdgeInPosition(i,sub.score[node->getCharOfTokenSeq(y,w)][vNode[i]->getCharOfTokenSeq(j,x)]*vWeigth1[y]*vWeigth2[i]);
         						if(i==0){
-        							//cout<<" "<<node->getCharOfTokenSeq(y,w)<<" & "<<vNode[i]->getCharOfTokenSeq(j,x)<<endl;
-        							//cout<<"\t lo score in posizione i= "<<i<<" vale "<<node->getTaxEdgeInPosition(i)<<endl;
         						}
         					}//end for
 
@@ -264,17 +293,8 @@ namespace Victor { namespace Phylo{
         			}//end for
         		}//end for
         	}//end final for
-        	//cout<<"end of all FOR"<<endl;
-
         	node->calculateAverageTax();
-        	//cout<<"near return"<<endl;
         }
-
-
-
-
-
-
 
 
 }} // namespace

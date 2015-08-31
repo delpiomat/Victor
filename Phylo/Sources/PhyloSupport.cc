@@ -523,5 +523,28 @@ namespace Victor { namespace Phylo{
 		     return ss.str();
 		  }
 
+		vector<string> PhyloSupport::mergeStringVector( vector<string> v1,vector<string> v2 ){
+			vector<string> v(v1.size()+v2.size());
+			for(unsigned int i=0; i<v1.size();i++){
+				v[i]=v1[i];
+			}
+			for(unsigned int i=0; i<v2.size();i++){
+				v[i+v1.size()]=v2[i];
+			}
+			return v;
+
+		}
+		vector<double> PhyloSupport::mergeDoubleVector( vector<double> v1,vector<double> v2 ){
+			vector<double> v(v1.size()+v2.size());
+			for(unsigned int i=0; i<v1.size();i++){
+				v[i]=v1[i];
+			}
+			for(unsigned int i=0; i<v2.size();i++){
+				v[i+v1.size()]=v2[i];
+			}
+			return v;
+
+		}
+
 
 }} // namespace
