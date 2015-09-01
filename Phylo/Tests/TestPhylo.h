@@ -32,9 +32,11 @@ public:
         suiteOfTests->addTest(new CppUnit::TestCaller<TestPhylo>("Test1 - Calculate distance of 2 seq.",
                 &TestPhylo::testPhylo_A));
         suiteOfTests->addTest(new CppUnit::TestCaller<TestPhylo>("Test2 - Insert Gap in a seq.",
-                &TestPhylo::testPhylo_B));
-        suiteOfTests->addTest(new CppUnit::TestCaller<TestPhylo>("Test3 - .",
+               &TestPhylo::testPhylo_B));
+        suiteOfTests->addTest(new CppUnit::TestCaller<TestPhylo>("Test3 - Calculate Multi Aling with weigth.",
                 &TestPhylo::testPhylo_C));
+        suiteOfTests->addTest(new CppUnit::TestCaller<TestPhylo>("Test4 - Calculate Multi Aling with weigth and insertion.",
+                &TestPhylo::testPhylo_D));
 
         return suiteOfTests;
     }
@@ -52,8 +54,13 @@ public:
 protected:
 
     void testPhylo_A() {
-
-        CPPUNIT_ASSERT(1==1);
+    	string seq1="AAABBCCC";
+    	string seq2="AAABBCCC";
+    	double distance=Phylo::PhyloSupport::distanceCalcTwoSeq(seq1,seq2);
+    	CPPUNIT_ASSERT( distance == 0 );
+    	seq2="DDDDDDDD";
+    	distance=Phylo::PhyloSupport::distanceCalcTwoSeq(seq1,seq2);
+    	CPPUNIT_ASSERT( distance == 1 );
     }
 
     void testPhylo_B() {
@@ -65,8 +72,58 @@ protected:
     }
 
     void testPhylo_C() {
+    	string a="AAAAAAAA";
+    	string b="AAAAAAAA";
+    	string c="AAAAAAAA";
+    	string o="AAAAAAAA";
+    	string t="AAAAAAAA";
+    	vector <string> num(2);
+    	vector <string> letter(3);
+    	num[0]=o;
+    	num[1]=t;
+    	letter[0]=a;
+    	letter[1]=b;
+    	letter[2]=c;
 
-    	CPPUNIT_ASSERT(1 == 1);
+    	vector <double> w1(2);
+    	vector <double> w2(3);
+    	w1[0]=1;
+    	w1[1]=1;
+    	w2[2]=1;
+    	w2[0]=1;
+    	w2[1]=1;
+    	vector <string> result=Phylo::PhyloSupport::AlingMultiSvsMultiS(num,letter,w1,w2,false,1);
+    	for(unsigned int i=0;i<result.size();i++) {
+    		for(unsigned int j=0;j<result[i].size();j++) {
+    			CPPUNIT_ASSERT(result[i][j] == 'A');
+    		}
+    	}
+    }
+
+    void testPhylo_D() {
+		string a="AACCAA";
+		string b="AACCAA";
+		string c="AACCAA";
+		string o="CC";
+		string t="CC";
+		vector <string> num(2);
+		vector <string> letter(3);
+		num[0]=o;
+		num[1]=t;
+		letter[0]=a;
+		letter[1]=b;
+		letter[2]=c;
+
+		vector <double> w1(3);
+		vector <double> w2(2);
+		w1[0]=1;
+		w1[1]=1;
+		w1[2]=1;
+		w2[0]=1;
+		w2[1]=1;
+		vector <string> result=Phylo::PhyloSupport::AlingMultiSvsMultiS(num,letter,w1,w2,false,2);
+		CPPUNIT_ASSERT(result[0][0] == '-');
+
     }
 
 };

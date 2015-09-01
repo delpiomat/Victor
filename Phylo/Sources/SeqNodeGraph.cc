@@ -77,7 +77,7 @@ namespace Victor { namespace Phylo{
 		indexStart=indexS;
 		indexFinish=indexF;
 		totNumSeq=totNumS;
-		vector <double> taxV(numSeqInS2);
+		vector <double> taxV(numSeqInS2,0);
 		taxEdge=taxV;
 		tokenSeq=tokenS;
 		tokenSize=tokenSeq[0].size();
@@ -116,9 +116,9 @@ namespace Victor { namespace Phylo{
 	 */
 	int SeqNodeGraph::returnBestEdgeAfterIndex(unsigned int index){
 		unsigned int best=index+1;
-		best=index+1;
 		for(unsigned int i=index+1; i<taxEdge.size();i++){
 			if(taxEdge[best]<taxEdge[i]){
+				cout<<"find best"<<taxEdge[best]<<" "<<taxEdge[i]<<"best i "<<best<<" "<<i<<endl;
 				best=i;
 			}
 		}
@@ -233,8 +233,7 @@ namespace Victor { namespace Phylo{
     					for(unsigned int w=0; w<node->getTokenSize();w++)
     					{//for all char in each seq of node
     						node->setTaxEdgeInPosition(i,sub.score[node->getCharOfTokenSeq(y,w)][vNode[i]->getCharOfTokenSeq(j,x)]);
-    						if(i==0){
-    						}
+
     					}//end for
 
     				}//end for
@@ -250,14 +249,13 @@ namespace Victor { namespace Phylo{
 	 *@Description for a node calculate all value of edges for all other node consider weigth by guide tree of sequence
 	 *@param SeqNodeGraph* node the node of graph That will be set
 	 *@param vector <SeqNodeGraph*> vNode array of nodes
-	 *@param vector <SeqNodeGraph*> vNode array of nodes
+	 *@param SeqNodeGraph* node
 	 *@param vector <double> vWeigth1 array of Weigth of first array of sequence
 	 *@param vector <double> vWeigth2 array of Weigth of second array of sequence
 	 */
     void SeqNodeGraph::setNodeWithWeigth(SeqNodeGraph* node, vector <SeqNodeGraph*> vNode,vector <double> vWeigth1,vector <double> vWeigth2){
 
         	//cout<<"dentro set node-----------------"<<endl;
-
         	//matrix config
         	string path = getenv("VICTOR_ROOT");
     		if (path.length() < 3)
@@ -284,11 +282,19 @@ namespace Victor { namespace Phylo{
         				{//for all token of string in node
         					for(unsigned int w=0; w<node->getTokenSize();w++)
         					{//for all char in each seq of node
-        						node->setTaxEdgeInPosition(i,sub.score[node->getCharOfTokenSeq(y,w)][vNode[i]->getCharOfTokenSeq(j,x)]*vWeigth1[y]*vWeigth2[i]);
-        						if(i==0){
-        						}
-        					}//end for
+        						node->setTaxEdgeInPosition(i,sub.score[node->getCharOfTokenSeq(y,w)][vNode[i]->getCharOfTokenSeq(j,x)]*vWeigth1[y]*vWeigth2[j]);
+        						//cout<<sub.score[node->getCharOfTokenSeq(y,w)][vNode[i]->getCharOfTokenSeq(j,x)]*vWeigth1[j]*vWeigth2[y]<<endl;
+    							//cout<<"i"<<i<<" j"<<j<<" x"<<x<<" y"<<y<<" w="<<w<<endl;
 
+        					/*	if(-400<sub.score[node->getCharOfTokenSeq(y,w)][vNode[i]->getCharOfTokenSeq(j,x)]*vWeigth1[y]*vWeigth2[j]*100 && sub.score[node->getCharOfTokenSeq(y,w)][vNode[i]->getCharOfTokenSeq(j,x)]*vWeigth1[j]*vWeigth2[y]*100<0)
+        						{
+        							cout<<"sub.score[node->getCharOfTokenSeq(y,w)]"<<node->getCharOfTokenSeq(y,w)<<"[vNode[i]->getCharOfTokenSeq(j,x)]"<<vNode[i]->getCharOfTokenSeq(j,x)<<endl;
+        							cout<<"vWeigth1[y] vWeigth2[j]"<<vWeigth1[y]<<" "<<vWeigth2[j]<<"j vale "<<j<<endl;
+        							cout<<"vWeigth1[0] vWeigth1[1]"<<vWeigth1[0]<<" "<<vWeigth1[1]<<endl;
+        							cout<<"vWeigth2[0] vWeigth2[1] vWeigth2[2]"<<vWeigth2[0]<<" "<<vWeigth2[1]<<" "<<vWeigth2[2]<<endl;
+        							cout<<"*vWeigth1[y] vWeigth2[j] il size() "<<vWeigth2.size()<<" "<<vWeigth1.size()<<endl;
+        						}*/
+        					}//end for
         				}//end for
         			}//end for
         		}//end for

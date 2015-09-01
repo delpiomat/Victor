@@ -279,7 +279,8 @@ namespace Victor { namespace Phylo{
         	}
     	}
 
-
+    	cout<<"tokensize2 "<<tokenSize2<<endl;
+    	cout<<"tokensize1 "<<tokenSize<<endl;
     	for(unsigned int i=0;i<tokenSize;i++){
     		tokenSizeGap+=gap;
     	}
@@ -288,7 +289,7 @@ namespace Victor { namespace Phylo{
     	}
 
     	if(verbose)
-    		cout<<"AlingMultiSvsMultiS2"<<endl;
+    		cout<<"AlingMultiSvsMultiS"<<endl;
  		while(seq1[0].size()%tokenSize!=0){
  			for(unsigned int i=0;i<seq1.size();i++){
  				seq1[i]+="-";
@@ -348,6 +349,7 @@ namespace Victor { namespace Phylo{
     		}
     		else {
     			edgeFor1[count1]=tokenS1[count1]->returnBestEdgeAfterIndex(count2);
+    			cout<<"edgeFor1[count1]"<<edgeFor1[count1]<<" "<<tokenS1[count1]->returnBestEdgeAfterIndex(count2);
     			count2=edgeFor1[count1];
     			count1++;
     		}
