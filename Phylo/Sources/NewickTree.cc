@@ -47,19 +47,18 @@ std::vector<double> distance;
  *@Description for create void node
  */
 	NewickTree::NewickTree() {
-
+		//root->weigthV;
+		//root->nameV;
+		//root->allignSeq;
 		root=new iNode;
 		root->name="NULL";
 		root->left=NULL;
 		root->right=NULL;
 		root->parent=NULL;
 		root->seq="noPURESeq";
-		root->allignSeq;
 		root->branchLength=-1;
 		root->divergenceR=0;
 		root->nseq=-1;
-		root->weigthV;
-		root->nameV;
 		root->ClustalW=false;
 		root->isRigth=false;
 		root->isLeft=false;
@@ -76,15 +75,16 @@ std::vector<double> distance;
 	 *@param double divR divergence usefull inNJ method
 	 */
 	NewickTree::NewickTree(int position,string name,string pureSeq,double divR){
+		//not need
+		//root->allignSeq;
+		//root->nameV;
+		//root->weigthV;
 		//void
 		root=new iNode;
 		root->left=NULL;
 		root->right=NULL;
 		root->parent=NULL;
-		root->allignSeq;
 		root->branchLength=-1;
-		root->weigthV;
-		root->nameV;
 		root->ClustalW=false;
 		root->isRigth=false;
 		root->isLeft=false;
@@ -105,14 +105,14 @@ std::vector<double> distance;
 	 */
 	NewickTree::NewickTree(int position,string name,string pureSeq){
 		//void
+		//root->weigthV;
+		//root->nameV;
+		//root->allignSeq;
 		root=new iNode;
 		root->left=NULL;
 		root->right=NULL;
 		root->parent=NULL;
-		root->allignSeq;
 		root->branchLength=0;
-		root->weigthV;
-		root->nameV;
 		root->ClustalW=false;
 		root->isRigth=false;
 		root->isLeft=false;
@@ -133,12 +133,13 @@ std::vector<double> distance;
 	 *@param NewickTree *lTree the left child
 	 */
 	NewickTree::NewickTree( NewickTree *rTree, NewickTree *lTree) {
+		//not need
+		//root->weigthV;
+		//root->nameV;
+		//root->allignSeq;
 		//void
 		root=new iNode;
-		root->allignSeq;
 		root->branchLength=-1;
-		root->weigthV;
-		root->nameV;
 		root->ClustalW=false;
 		root->isRigth=false;
 		root->isLeft=false;
@@ -165,12 +166,10 @@ std::vector<double> distance;
 	}
 
 
-
 	/**
 	 *@Description Basic destructor
 	 */
 	NewickTree::~NewickTree() {
-		//destroy_tree();//to do
 	}
 
 

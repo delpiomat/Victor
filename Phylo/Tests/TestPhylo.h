@@ -35,7 +35,7 @@ public:
                &TestPhylo::testPhylo_B));
         suiteOfTests->addTest(new CppUnit::TestCaller<TestPhylo>("Test3 - Calculate Multi Aling with weigth.",
                 &TestPhylo::testPhylo_C));
-        suiteOfTests->addTest(new CppUnit::TestCaller<TestPhylo>("Test4 - Calculate Multi Aling with weigth and insertion.",
+        suiteOfTests->addTest(new CppUnit::TestCaller<TestPhylo>("Test4 - Calculate Multi Aling with weigth and deletetion/insertion.",
                 &TestPhylo::testPhylo_D));
 
         return suiteOfTests;
@@ -123,6 +123,7 @@ protected:
 		w2[1]=1;
 		vector <string> result=Phylo::PhyloSupport::AlingMultiSvsMultiS(num,letter,w1,w2,false,2);
 		CPPUNIT_ASSERT(result[0][0] == '-');
+		CPPUNIT_ASSERT(result[0][2] == 'C');
 
     }
 

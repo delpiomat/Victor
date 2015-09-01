@@ -78,7 +78,7 @@ sShowHelp() {
             << "\n                     \t --gf=0: UPGMA (default)."
             << "\n                     \t --gf=1: NJ."
 			<< "\n                     \t --gf=2: ClustalW use NJ."
-            << "\n   [--t <int>] 	   \t For decide dimension of token, very important for ClustalW(10%size of first seq)"
+            << "\n   [-t <int>] 	   \t For decide dimension of token, very important for ClustalW(10%size of first seq)"
             << "\n   [--cSeq <double>] \t Coefficient for sequence alignment (default = 1.0)"
 			<< "\n"
 			<< "\n   [--ktuples]     	\t use ktuples method  formula for calculate distance of pairwise sequence"
@@ -131,7 +131,7 @@ int main(int argc, char **argv) {
     getArg("u", ups, argc, argv, 999.9);
     getArg("U", upa, argc, argv, 999.9);
 
-    getArg("-t", tokenSize, argc, argv, -1);
+    getArg("t", tokenSize, argc, argv, -1);
 
 	getArg("-cSeq", cSeq, argc, argv, 0.80);
 

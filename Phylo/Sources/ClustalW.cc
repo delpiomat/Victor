@@ -66,7 +66,9 @@ namespace Victor { namespace Phylo{
         progressiveAlign();
 	}
 
-
+	/**
+	 *@Description Basic destructor
+	 */
 	ClustalW::~ClustalW() {
 	}
 
@@ -103,7 +105,7 @@ namespace Victor { namespace Phylo{
 		cout<<"percent to the end:"<<endl;
 		unsigned int j=1;
 		while(nodeTree.size()>1){
-			cout<<""<<((j)*100/(guideTree.getNumberOfLeaf())*100)/100<<"% ";
+			cout<<""<<((j)*100/(guideTree.getNumberOfLeaf())*100)/100<<"% "<<endl;
 			for(unsigned int i=0;i<nodeTree.size();i++){//for each node in nodeTree
 				if(nodeTree.size()==2 && i==0) {
 					if(nodeTree[0]->allignSeq[0].size()<nodeTree[1]->allignSeq[0].size()){
@@ -197,6 +199,7 @@ namespace Victor { namespace Phylo{
 			}
 			j++;
 		}
+		cout<<"...complete!"<<endl;
 
 		string outString=ClustalW::printClustalWFromat(nodeTree[0]->allignSeq,nodeTree[0]->nameV);
 
