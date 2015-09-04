@@ -230,24 +230,10 @@ namespace Victor { namespace Phylo{
 	 *@return string txt Correct rappresetation in CLustalW format(50 char by lane)
 	 */
 	string ClustalW::printClustalWFromat(vector<string> seq){
-		string txt="CLUSTALW \n";
-		string tmp="";
-		unsigned int j=0;
-		unsigned int index=0;
-		unsigned int dim=50;
-		while(j<seq[0].size()){
-			for(unsigned int i=0;i<seq.size();i++){
-				txt+="seq"+PhyloSupport::intToString(i)+" \t \t ";
-				for(j=dim*index;j<=dim+dim*index && j<seq[i].size();j++){
-					txt+=seq[i][j];
-				}
-				txt+=" "+PhyloSupport::intToString(j);
-				txt+="\n";
-			}
-			txt+="\n\n";
-			index++;
-		}
-		return txt;
+		vector <string> names(seq.size());
+		for(unsigned int i=0; i<names.size();i++)
+			names[i]="seq_"+PhyloSupport::intToString(i);
+		return ClustalW::printClustalWFromat(seq,names);
 	}
 
 	/**
@@ -256,18 +242,28 @@ namespace Victor { namespace Phylo{
 	 *@return string txt Correct rappresetation in CLustalW format(50 char by lane)
 	 */
 	string ClustalW::printClustalWFromat(vector<string> seq, vector <string> names){
-		string txt="";
+		string txt="CLUSTALW \n\n";
 		string tmp="";
 		unsigned int j=0;
 		unsigned int index=0;
 		unsigned int dim=50;
+		vector <unsigned int> countSimb(seq.size(),0);
+		bool onlyGap=true;
 		while(j<seq[0].size()){
 			for(unsigned int i=0;i<seq.size();i++){
-				txt+=names[i]+" \t \t ";
+				txt+=names[i]+" ";
 				for(j=dim*index;j<=dim+dim*index && j<seq[i].size();j++){
 					txt+=seq[i][j];
+					if(seq[i][j]!='-') {
+						countSimb[i]++;
+						onlyGap=false;
+					}
 				}
-				txt+=" "+PhyloSupport::intToString(j);
+				if(!onlyGap)
+					txt+=" "+PhyloSupport::intToString(countSimb[i]);
+				else
+					txt+=" ";
+				onlyGap=true;
 				txt+="\n";
 			}
 			txt+="\n\n";
@@ -291,7 +287,7 @@ namespace Victor { namespace Phylo{
 		string dataPath = path + "data/";
 
 		//Default matrix
-		string matrixFileName="blosum62.dat";
+		string matrixFileName=PhyloSupport::matrix;
 		matrixFileName = dataPath + matrixFileName;
 		ifstream matrixFile(matrixFileName.c_str());
 		if (!matrixFile)
@@ -324,7 +320,7 @@ namespace Victor { namespace Phylo{
 		string dataPath = path + "data/";
 
 		//Default matrix
-		string matrixFileName="blosum62.dat";
+		string matrixFileName=PhyloSupport::matrix;
 		matrixFileName = dataPath + matrixFileName;
 		ifstream matrixFile(matrixFileName.c_str());
 		if (!matrixFile)
