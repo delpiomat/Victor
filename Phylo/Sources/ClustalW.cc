@@ -178,12 +178,12 @@ namespace Victor { namespace Phylo{
 							//insert name
 							nodeTree[i]->parent->nameV=PhyloSupport::mergeStringVector(nodeTree[i]->nameV,nodeTree[i]->parent->left->nameV);
 							//insert weigth
-							nodeTree[i]->parent->weigthV=PhyloSupport::mergeDoubleVector(nodeTree[i]->parent->left->weigthV,nodeTree[i]->weigthV);
+							nodeTree[i]->parent->weigthV=PhyloSupport::mergeDoubleVector(nodeTree[i]->weigthV,nodeTree[i]->parent->left->weigthV);
 						}
 						else {
 							tmpV=PhyloSupport::AlingMultiSvsMultiS(nodeTree[i]->parent->left->allignSeq,nodeTree[i]->allignSeq,nodeTree[i]->parent->right->weigthV,nodeTree[i]->weigthV,false,tokenSize);
 							//insert name
-							nodeTree[i]->parent->nameV=PhyloSupport::mergeStringVector(nodeTree[i]->nameV,nodeTree[i]->parent->left->nameV);
+							nodeTree[i]->parent->nameV=PhyloSupport::mergeStringVector(nodeTree[i]->parent->left->nameV,nodeTree[i]->nameV);
 							//insert weigth
 							nodeTree[i]->parent->weigthV=PhyloSupport::mergeDoubleVector(nodeTree[i]->parent->left->weigthV,nodeTree[i]->weigthV);
 						}
