@@ -75,6 +75,7 @@ namespace Victor { namespace Phylo{
 	double PhyloSupport::upa=999.9;
 	int PhyloSupport::tokenSize=-1;
 	unsigned int PhyloSupport::weightingScheme=0;
+	string PhyloSupport::matrix="blosum62.dat";
 	bool PhyloSupport::verbose=false;
 
 
@@ -94,7 +95,7 @@ namespace Victor { namespace Phylo{
 		AlignmentData *ad;
 
 		//Default matrix
-		string matrixFileName="blosum62.dat";
+		string matrixFileName=PhyloSupport::matrix;
 		matrixFileName = dataPath + matrixFileName;
 		ifstream matrixFile(matrixFileName.c_str());
 		if (!matrixFile)
@@ -206,7 +207,7 @@ namespace Victor { namespace Phylo{
 		AlignmentData *ad;
 
 		//Default matrix
-		string matrixFileName="blosum62.dat";
+		string matrixFileName=PhyloSupport::matrix;
 		matrixFileName = dataPath + matrixFileName;
 		ifstream matrixFile(matrixFileName.c_str());
 		if (!matrixFile)

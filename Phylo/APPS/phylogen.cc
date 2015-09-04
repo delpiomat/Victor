@@ -169,6 +169,7 @@ int main(int argc, char **argv) {
 		PhyloSupport::weightingScheme=weightingScheme;
 		PhyloSupport::tokenSize=tokenSize;
 		PhyloSupport::verbose=verbose;
+		PhyloSupport::matrix=matrixFileName;
 
     // --------------------------------------------------
     // 3. Load data

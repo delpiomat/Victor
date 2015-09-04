@@ -75,13 +75,21 @@ namespace Victor { namespace Phylo {
         //to merge 2 vector of double, order of merge is v=v1[0],v1[1]....v2[0]....v2[n-1]
         static vector<double> mergeDoubleVector(vector <double> v1,vector <double> v2 );
 
-        //static parameter for NJ UPGMA and ClustalW
+        //static parameter for NJ UPGMA and ClustalW:
+
+        //gap for align
         static double openGapPenalty;
         static double extensionGapPenalty;
-		static double cSeq;
-		static double downs, downa, ups, upa;
+		//Cseq for align
+        static double cSeq;
+		//for align
+        static double downs, downa, ups, upa;
 		static unsigned int weightingScheme;
+		//ClustalW
 		static int tokenSize;
+		//Substitution matrix
+		static string matrix;
+		//verbose output
 		static bool verbose;
 
 
